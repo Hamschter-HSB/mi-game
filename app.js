@@ -4,9 +4,9 @@ class App extends Phaser.Scene
         {
             this.load.setBaseURL('https://cdn.phaserfiles.com/v385');
 
-            this.load.image('sky', 'assets/skies/space3.png');
-            this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-            this.load.image('red', 'assets/particles/red.png');
+            this.load.image('sky', 'assets/img/bg.png');
+            this.load.image('logo', 'assets/img/1.png');
+            this.load.image('red', 'assets/img/2.png');
         }
 
         create ()
@@ -33,7 +33,7 @@ class App extends Phaser.Scene
         type: Phaser.AUTO,
         width: 800,
         height: 600,
-        scene: Example,
+        scene: App,
         physics: {
             default: 'arcade',
             arcade: {
