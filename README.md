@@ -1,4 +1,4 @@
-# Pizza Delivery (using Phaser.io) v.0.0.0
+# Pizza Delivery (using Phaser.io) v.0.0.3
 Little Browser Game made with Phaser 3 for media informatics 2 at the HSB.
 We will not support further development of this.
 Feel free to fork this and use it for your own projects. Just tag us ;)
