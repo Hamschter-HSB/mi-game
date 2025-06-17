@@ -57,6 +57,7 @@ class LoadingScene extends Phaser.Scene {
 
   preload() {
     this.load.audio('menuMusic', ['assets/music/menu.mp3']);
+    this.load.audio('clickSound', ['assets/sounds/click.mp3']);
     console.log("preloaded audio");
     }
 
@@ -82,15 +83,24 @@ class MainMenuScene extends Phaser.Scene {
 
     this.add.text(400, 200, 'Spielen', { fontSize: '24px', color: '#0f0' })
       .setOrigin(0.5).setInteractive()
-      .on('pointerdown', () => this.scene.start('IntroDeliveryScene'));
+      .on('pointerdown', () => {
+        this.sound.play('clickSound', { volume: GameSettings.volume });
+        this.scene.start('IntroDeliveryScene');
+    });
 
     this.add.text(400, 250, 'Einstellungen', { fontSize: '24px', color: '#0ff' })
       .setOrigin(0.5).setInteractive()
-      .on('pointerdown', () => this.scene.start('SettingsScene'));
+      .on('pointerdown', () => {
+        this.sound.play('clickSound', { volume: GameSettings.volume });
+        this.scene.start('SettingsScene');
+    });
 
     this.add.text(400, 300, 'Credits', { fontSize: '24px', color: '#ff0' })
       .setOrigin(0.5).setInteractive()
-      .on('pointerdown', () => this.scene.start('CreditsScene'));
+      .on('pointerdown', () => {
+        this.sound.play('clickSound', { volume: GameSettings.volume });
+        this.scene.start('CreditsScene');
+    });
 
     applyBrightness(this);
   }
@@ -116,6 +126,7 @@ class SettingsScene extends Phaser.Scene {
         GameSettings.volume = Math.max(0, GameSettings.volume - 0.1);
         volumeText.setText(`${Math.round(GameSettings.volume * 100)}%`);
         this.sound.volume = GameSettings.volume;
+        this.sound.play('clickSound', { volume: GameSettings.volume });
       });
 
     this.add.text(530, 150, '+', { fontSize: '24px', color: '#0f0' })
@@ -123,6 +134,7 @@ class SettingsScene extends Phaser.Scene {
         GameSettings.volume = Math.min(1, GameSettings.volume + 0.1);
         volumeText.setText(`${Math.round(GameSettings.volume * 100)}%`);
         this.sound.volume = GameSettings.volume;
+        this.sound.play('clickSound', { volume: GameSettings.volume });
       });
 
     // Helligkeit
@@ -135,6 +147,7 @@ class SettingsScene extends Phaser.Scene {
         GameSettings.brightness = Math.round(GameSettings.brightness * 10) / 10; // auf 1 Nachkommastelle runden
         brightnessText.setText(`${Math.round(GameSettings.brightness * 100)}%`);
         updateBrightnessOverlay(this);
+        this.sound.play('clickSound', { volume: GameSettings.volume });
     });
 
     this.add.text(530, 200, '+', { fontSize: '24px', color: '#0f0' })
@@ -143,12 +156,16 @@ class SettingsScene extends Phaser.Scene {
         GameSettings.brightness = Math.round(GameSettings.brightness * 10) / 10;
         brightnessText.setText(`${Math.round(GameSettings.brightness * 100)}%`);
         updateBrightnessOverlay(this);
+        this.sound.play('clickSound', { volume: GameSettings.volume });
     });
 
 
     this.add.text(400, 350, 'Zurück', { fontSize: '24px', color: '#f00' })
       .setOrigin(0.5).setInteractive()
-      .on('pointerdown', () => this.scene.start('MainMenuScene'));
+      .on('pointerdown', () => {
+        this.sound.play('clickSound', { volume: GameSettings.volume });
+        this.scene.start('MainMenuScene');
+    });
 
     applyBrightness(this);
   }
@@ -169,7 +186,10 @@ class CreditsScene extends Phaser.Scene {
 
     this.add.text(400, 350, 'Zurück', { fontSize: '24px', color: '#f00' })
       .setOrigin(0.5).setInteractive()
-      .on('pointerdown', () => this.scene.start('MainMenuScene'));
+      .on('pointerdown', () => {
+        this.sound.play('clickSound', { volume: GameSettings.volume });
+        this.scene.start('MainMenuScene');
+    });
 
     applyBrightness(this);
   }
