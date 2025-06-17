@@ -82,7 +82,7 @@ class MainMenuScene extends Phaser.Scene {
 
     this.add.text(400, 200, 'Spielen', { fontSize: '24px', color: '#0f0' })
       .setOrigin(0.5).setInteractive()
-      .on('pointerdown', () => this.scene.start('GameScene'));
+      .on('pointerdown', () => this.scene.start('IntroDeliveryScene'));
 
     this.add.text(400, 250, 'Einstellungen', { fontSize: '24px', color: '#0ff' })
       .setOrigin(0.5).setInteractive()
@@ -190,12 +190,65 @@ class GameScene extends Phaser.Scene {
   }
 }
 
+class IntroDeliveryScene extends Phaser.Scene {
+  constructor() {
+    super('IntroDeliveryScene');
+  }
+
+  preload() {
+    // Optional: Lade Spieler-Asset oder benutze Platzhalter
+  }
+
+  create() {
+    this.sound.volume = GameSettings.volume;
+    this.scene.get('MusicManagerScene').stopMusic();
+    applyBrightness(this);
+
+    // Begrüßungstext
+    const welcomeText = this.add.text(400, 50, 'Willkommen bei Pizza Delivery!\nLiefern wir die erste Pizza aus.', {
+      fontSize: '20px',
+      color: '#ffffff',
+      align: 'center'
+    }).setOrigin(0.5);
+
+    this.time.delayedCall(3000, () => welcomeText.destroy());
+
+    // Spieler-Objekt als Kreis (Platzhalter)
+    this.player = this.add.circle(400, 300, 20, 0xff0000);
+    this.physics.add.existing(this.player);
+    this.player.body.setCollideWorldBounds(true);
+
+    // WASD Steuerung
+    this.keys = this.input.keyboard.addKeys('W,A,S,D');
+  }
+
+  update() {
+    const speed = 200;
+    const body = this.player.body;
+
+    body.setVelocity(0);
+
+    if (this.keys.W.isDown) body.setVelocityY(-speed);
+    if (this.keys.S.isDown) body.setVelocityY(speed);
+    if (this.keys.A.isDown) body.setVelocityX(-speed);
+    if (this.keys.D.isDown) body.setVelocityX(speed);
+  }
+}
+
+
 const config = {
   type: Phaser.AUTO,
   width: 800,
   height: 600,
-  scene: [LoadingScene, MusicManagerScene, MainMenuScene, SettingsScene, CreditsScene, GameScene],
-  backgroundColor: '#000'
+  scene: [LoadingScene, MusicManagerScene, MainMenuScene, SettingsScene, CreditsScene, IntroDeliveryScene, GameScene],
+  backgroundColor: '#000',
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { y: 0 },
+      debug: false
+    }
+  }
 };
 
 new Phaser.Game(config);
