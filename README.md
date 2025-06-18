@@ -30,3 +30,7 @@ This is a project of students for university. Here won't be big support for anyo
 Greetings, 
 Hamschter-Team (MI S2)
 HSB
+
+## Credits
+Clicksound - https://pixabay.com/sound-effects/click-buttons-ui-menu-sounds-effects-button-7-203601/
+Menumusic - https://pixabay.com/de/music/bossa-nova-jazz-bossa-nova-cooking-show-music-312826/
