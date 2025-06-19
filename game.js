@@ -130,7 +130,7 @@ class MainMenuScene extends Phaser.Scene {
       .setOrigin(0.5).setInteractive()
       .on('pointerdown', () => {
         this.sound.play('clickSound', { volume: GameSettings.volume });
-        this.scene.start('IntroDeliveryScene');
+        this.scene.start('GameScene');
     });
 
     this.add.text(400, 250, 'Einstellungen', { fontSize: '24px', color: '#0ff' })
@@ -245,15 +245,55 @@ class GameScene extends Phaser.Scene {
     super('GameScene');
   }
 
+  preload() {
+    this.load.tilemapTiledJSON('pizzamap', 'unbenannt.json');
+    this.load.image('tiles', 'download.jpg');
+
+    // Optionaler Spieler-Sprite
+  }
+
   create() {
     this.scene.get('MusicManagerScene').stopMusic();
     this.sound.volume = GameSettings.volume;
 
-    this.add.text(400, 300, 'Spielszene läuft!', { fontSize: '28px', color: '#fff' }).setOrigin(0.5);
+    // Karte laden
+    const map = this.make.tilemap({ key: 'pizzamap' });
+    const tileset = map.addTilesetImage('download', 'tiles'); // name in Tiled + image key
+    const groundLayer = map.createLayer('Ground', tileset, 0, 0); // Layername wie in Tiled
+
+    // Spieler hinzufügen
+    this.player = this.physics.add.sprite(100, 100, 'player'); // ← wichtig: physics.add!
+    this.player.setCollideWorldBounds(true);
+
+
+    // Kamera folgt Spieler
+    this.cameras.main.startFollow(this.player);
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    // Physik-Bereich auf Mapgröße begrenzen
+    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    // WASD
+    this.keys = this.input.keyboard.addKeys('W,A,S,D');
 
     applyBrightness(this);
   }
+
+  update() {
+    if (!this.player || !this.player.body) return;
+
+    const speed = 200;
+    const body = this.player.body;
+    body.setVelocity(0);
+
+    if (this.keys.W.isDown) body.setVelocityY(-speed);
+    if (this.keys.S.isDown) body.setVelocityY(speed);
+    if (this.keys.A.isDown) body.setVelocityX(-speed);
+    if (this.keys.D.isDown) body.setVelocityX(speed);
+
+  }
 }
+
 
 class IntroDeliveryScene extends Phaser.Scene {
   constructor() {
