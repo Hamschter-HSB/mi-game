@@ -246,8 +246,9 @@ class GameScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.tilemapTiledJSON('pizzamap', 'unbenannt.json');
-    this.load.image('tiles', 'download.jpg');
+    this.load.tilemapTiledJSON('pizzamap', 'assets/map/city_map.json');
+    this.load.image('tiles', 'assets/img/city_tilemap.png');
+    this.load.image('player', 'assets/img/player.png');
 
     // Optionaler Spieler-Sprite
   }
@@ -258,11 +259,12 @@ class GameScene extends Phaser.Scene {
 
     // Karte laden
     const map = this.make.tilemap({ key: 'pizzamap' });
-    const tileset = map.addTilesetImage('download', 'tiles'); // name in Tiled + image key
+    const tileset = map.addTilesetImage('city_tilemap', 'tiles'); // name in Tiled + image key
     const groundLayer = map.createLayer('Ground', tileset, 0, 0); // Layername wie in Tiled
+    const ObjectLayer = map.createLayer('Objects', tileset, 0, 0); // Layername wie in Tiled
 
     // Spieler hinzufügen
-    this.player = this.physics.add.sprite(100, 100, 'player'); // ← wichtig: physics.add!
+    this.player = this.physics.add.sprite(768, 768, 'player'); // ← wichtig: physics.add!
     this.player.setCollideWorldBounds(true);
 
 
@@ -282,7 +284,7 @@ class GameScene extends Phaser.Scene {
   update() {
     if (!this.player || !this.player.body) return;
 
-    const speed = 200;
+    const speed = 400;
     const body = this.player.body;
     body.setVelocity(0);
 
@@ -291,61 +293,15 @@ class GameScene extends Phaser.Scene {
     if (this.keys.A.isDown) body.setVelocityX(-speed);
     if (this.keys.D.isDown) body.setVelocityX(speed);
 
-  }
-}
-
-
-class IntroDeliveryScene extends Phaser.Scene {
-  constructor() {
-    super('IntroDeliveryScene');
-  }
-
-  preload() {
-    // Optional: Lade Spieler-Asset oder benutze Platzhalter
-  }
-
-  create() {
-    this.sound.volume = GameSettings.volume;
-    this.scene.get('MusicManagerScene').stopMusic();
-    applyBrightness(this);
-
-    // Begrüßungstext
-    const welcomeText = this.add.text(400, 50, 'Willkommen bei Pizza Delivery!\nLiefern wir die erste Pizza aus.', {
-      fontSize: '20px',
-      color: '#ffffff',
-      align: 'center'
-    }).setOrigin(0.5);
-
-    this.time.delayedCall(3000, () => welcomeText.destroy());
-
-    // Spieler-Objekt als Kreis (Platzhalter)
-    this.player = this.add.circle(400, 300, 20, 0xff0000);
-    this.physics.add.existing(this.player);
-    this.player.body.setCollideWorldBounds(true);
-
-    // WASD Steuerung
-    this.keys = this.input.keyboard.addKeys('W,A,S,D');
-  }
-
-  update() {
-    const speed = 200;
-    const body = this.player.body;
-
-    body.setVelocity(0);
-
-    if (this.keys.W.isDown) body.setVelocityY(-speed);
-    if (this.keys.S.isDown) body.setVelocityY(speed);
-    if (this.keys.A.isDown) body.setVelocityX(-speed);
-    if (this.keys.D.isDown) body.setVelocityX(speed);
   }
 }
 
 
 const config = {
   type: Phaser.AUTO,
-  width: 1200,
-  height: 900,
-  scene: [LoadingScene, MusicManagerScene, MainMenuScene, SettingsScene, CreditsScene, IntroDeliveryScene, GameScene],
+  width: 1920,
+  height: 1028,
+  scene: [LoadingScene, MusicManagerScene, MainMenuScene, SettingsScene, CreditsScene, GameScene],
   backgroundColor: '#000',
   physics: {
     default: 'arcade',
