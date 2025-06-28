@@ -149,21 +149,43 @@ class MainMenuScene extends Phaser.Scene {
 
     this.add.text(400, 100, 'Hauptmenü', { fontSize: '32px', color: '#fff' }).setOrigin(0.5);
 
-    this.add.text(400, 200, 'Spielen', { fontSize: '24px', color: '#0f0' })
-      .setOrigin(0.5).setInteractive()
+    //this.add.text(400, 200, 'Spielen', { fontSize: '24px', color: '#0f0' })
+    //  .setOrigin(0.5).setInteractive()
+    //  .on('pointerdown', () => {
+    //    this.sound.play('clickSound', { volume: GameSettings.volume });
+    //    this.scene.start('GameScene');
+    //});
+    const newGameBtn = this.add.text(400, 200, 'Neues Spiel', { fontSize: '24px', color: '#0f0' })
+      .setOrigin(0.5)
+      .setInteractive()
       .on('pointerdown', () => {
+        GameState.currentLevel = 1;
+        GameState.deliveryIndex = 0;
+        GameState.hasPizza = false;
         this.sound.play('clickSound', { volume: GameSettings.volume });
         this.scene.start('GameScene');
-    });
+      });
+      const continueBtn = this.add.text(400, 250, 'Fortsetzen', { fontSize: '24px', color: GameState.currentLevel === 1 ? '#555' : '#0ff' })
+        .setOrigin(0.5);
 
-    this.add.text(400, 250, 'Einstellungen', { fontSize: '24px', color: '#0ff' })
+        if (GameState.currentLevel !== 1) {
+          continueBtn.setInteractive()
+            .on('pointerdown', () => {
+              this.sound.play('clickSound', { volume: GameSettings.volume });
+              this.scene.start('GameScene');
+            });
+      }
+
+
+
+    this.add.text(400, 300, 'Einstellungen', { fontSize: '24px', color: '#0ff' })
       .setOrigin(0.5).setInteractive()
       .on('pointerdown', () => {
         this.sound.play('clickSound', { volume: GameSettings.volume });
         this.scene.start('SettingsScene');
     });
 
-    this.add.text(400, 300, 'Credits', { fontSize: '24px', color: '#ff0' })
+    this.add.text(400, 350, 'Credits', { fontSize: '24px', color: '#ff0' })
       .setOrigin(0.5).setInteractive()
       .on('pointerdown', () => {
         this.sound.play('clickSound', { volume: GameSettings.volume });
@@ -282,6 +304,14 @@ class GameScene extends Phaser.Scene {
     this.scene.get('MusicManagerScene').stopMusic();
     this.sound.volume = GameSettings.volume;
 
+    this.menuBG = null;
+    this.menuTitle = null;
+    this.resumeButton = null;
+    this.mainMenuButton = null;
+    this.menuVisible = false;
+
+
+
     // Karte laden
     const map = this.make.tilemap({ key: 'pizzamap' });
     const tileset = map.addTilesetImage('city_tilemap', 'tiles'); // name in Tiled + image key
@@ -305,18 +335,32 @@ class GameScene extends Phaser.Scene {
 
     applyBrightness(this);
 
-    this.instructionText = this.add.text(960, 50, '', {
-      fontSize: '32px',
+    this.instructionText = this.add.text(20, 20, '', {
+      fontSize: '28px',
       color: '#fff',
-      backgroundColor: 'rgba(0,0,0,0.5)',
+      backgroundColor: 'rgba(0,0,0,0.7)',
       padding: { x: 10, y: 5 }
-    }).setOrigin(0.5);
+    }).setScrollFactor(0);
+
 
     // Waypoints
     this.waypoints = [];
     this.waypointGroup = this.add.group();
 
     this.setupLevel();
+
+    this.menuButton = this.add.text(1700, 20, '☰', {
+      fontSize: '48px',
+      color: '#fff',
+      backgroundColor: 'rgba(0,0,0,0.7)',
+      padding: { x: 10, y: 5 }
+    })
+    .setScrollFactor(0)
+    .setInteractive()
+    .on('pointerdown', () => {
+      this.toggleMenu();
+    });
+
   }
   // game functions
   setupLevel() {
@@ -394,7 +438,7 @@ class GameScene extends Phaser.Scene {
       const x = startX + dx * i;
       const y = startY + dy * i;
 
-      const wp = this.add.circle(x, y, 10, 0xff0000).setDepth(500);
+      const wp = this.add.circle(x, y, 10, 0xff0000).setDepth(100);
       this.waypointGroup.add(wp);
       this.waypoints.push(wp);
     }
@@ -417,6 +461,88 @@ class GameScene extends Phaser.Scene {
       console.log(`Spieler teleportiert zu: (${x}, ${y})`);
     }
   }
+  getPlayerCoords() {
+    if (this.player) {
+      console.log(`Player coords: x=${Math.round(this.player.x)}, y=${Math.round(this.player.y)}`);
+      return { x: Math.round(this.player.x), y: Math.round(this.player.y) };
+    }
+  }
+
+
+  toggleMenu() {
+    if (this.menuVisible) {
+      this.menuBG.setVisible(false);
+      this.menuTitle.setVisible(false);
+      this.resumeButton.setVisible(false);
+      this.mainMenuButton.setVisible(false);
+      this.menuVisible = false;
+    } else {
+      // Falls Buttons noch nicht existieren → anlegen
+      if (!this.menuBG) {
+        this.menuBG = this.add.rectangle(960, 514, 800, 600, 0x000000, 0.8).setScrollFactor(0).setDepth(9999);
+        this.menuTitle = this.add.text(960, 300, 'Pause-Menü', { fontSize: '48px', color: '#fff' }).setOrigin(0.5).setScrollFactor(0).setDepth(9999);
+
+        this.resumeButton = this.add.text(960, 400, 'Weiterspielen', { fontSize: '32px', color: '#0f0' })
+          .setOrigin(0.5)
+          .setScrollFactor(0)
+          .setDepth(9999)
+          .setInteractive()
+          .on('pointerdown', () => {
+            this.toggleMenu();
+          });
+
+        this.mainMenuButton = this.add.text(960, 480, 'Zum Hauptmenü', { fontSize: '32px', color: '#f00' })
+          .setOrigin(0.5)
+          .setScrollFactor(0)
+          .setDepth(9999)
+          .setInteractive()
+          .on('pointerdown', () => {
+            this.sound.play('clickSound', { volume: GameSettings.volume });
+            this.scene.start('MainMenuScene');
+          });
+
+        const restartButton = this.add.text(960, 560, 'Neustarten', { fontSize: '32px', color: '#ff0' })
+          .setOrigin(0.5)
+          .setScrollFactor(0)
+          .setDepth(9999)
+          .setInteractive()
+          .on('pointerdown', () => {
+            GameState.currentLevel = 1;
+            GameState.deliveryIndex = 0;
+            GameState.hasPizza = false;
+            this.menuBG.setVisible(false);
+            this.menuTitle.setVisible(false);
+            this.resumeButton.setVisible(false);
+            this.mainMenuButton.setVisible(false);
+            restartButton.setVisible(false);
+            this.menuVisible = false;
+            this.setupLevel();
+          });
+
+
+        // Erst unsichtbar
+        this.menuBG.setVisible(false);
+        this.menuTitle.setVisible(false);
+        this.resumeButton.setVisible(false);
+        this.mainMenuButton.setVisible(false);
+        restartButton.setVisible(false);
+        
+      }
+
+      this.menuBG.setVisible(true);
+      this.menuTitle.setVisible(true);
+      this.resumeButton.setVisible(true);
+      this.mainMenuButton.setVisible(true);
+      restartButton.setVisible(true);
+      this.menuVisible = true;
+    }
+  }
+
+
+
+
+
+
 
 
 
@@ -425,6 +551,7 @@ class GameScene extends Phaser.Scene {
 
   update() {
     if (!this.player || !this.player.body) return;
+    //if (this.menuVisible) return;
 
     const speed = 400;
     const body = this.player.body;
