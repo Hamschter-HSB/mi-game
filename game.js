@@ -141,10 +141,38 @@ class MainMenuScene extends Phaser.Scene {
     super('MainMenuScene');
   }
 
+  preload() {
+    this.load.image('loadingBG', 'assets/img/bg_loading.jpg');
+  }
+
+
   create() {
     this.sound.volume = GameSettings.volume;
     this.scene.get('MusicManagerScene').playMusic(this);
 
+    const bg = this.add.image(0, 0, 'loadingBG').setOrigin(0);
+
+    // Bildschirmgröße
+    const screenWidth = this.cameras.main.width;
+    const screenHeight = this.cameras.main.height;
+
+    // Bildgröße
+    const texture = this.textures.get('loadingBG').getSourceImage();
+    const imgWidth = texture.width;
+    const imgHeight = texture.height;
+
+    // Skaliere wie in LoadingScene
+    const scale = Math.max(screenWidth / imgWidth, screenHeight / imgHeight);
+    bg.setScale(scale);
+
+    // Zentriere
+    bg.setPosition(
+        (screenWidth - imgWidth * scale) / 2,
+        (screenHeight - imgHeight * scale) / 2
+    );
+
+    // Abdunkeln
+    bg.setAlpha(0.3);
 
 
     this.add.text(400, 100, 'Hauptmenü', { fontSize: '32px', color: '#fff' }).setOrigin(0.5);
