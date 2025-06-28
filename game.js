@@ -3,6 +3,29 @@ const GameSettings = {
   brightness: 1
 };
 
+const GameState = {
+  currentLevel: 1,
+  objectives: [],
+  deliveryPoints: [],
+  deliveryIndex: 0,
+  hasPizza: false
+};
+
+const Levels = {
+    1: {
+      pickup: { x: 500, y: 500 },
+      deliveries: [{ x: 1200, y: 800 }]
+    },
+    2: {
+      pickup: { x: 500, y: 500 },
+      deliveries: [
+        { x: 1300, y: 700 },
+        { x: 1400, y: 500 }
+      ]
+    }
+  };
+
+
 function applyBrightness(scene) {
   scene.brightnessOverlay = scene.add.rectangle(0, 0, 800, 600, 0x000000)
     .setOrigin(0)
@@ -245,6 +268,7 @@ class GameScene extends Phaser.Scene {
     super('GameScene');
   }
 
+
   preload() {
     this.load.tilemapTiledJSON('pizzamap', 'assets/map/city_map.json');
     this.load.image('tiles', 'assets/img/city_tilemap.png');
@@ -254,6 +278,7 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
+    window.currentScene = this; // for debug
     this.scene.get('MusicManagerScene').stopMusic();
     this.sound.volume = GameSettings.volume;
 
@@ -279,7 +304,124 @@ class GameScene extends Phaser.Scene {
     this.keys = this.input.keyboard.addKeys('W,A,S,D');
 
     applyBrightness(this);
+
+    this.instructionText = this.add.text(960, 50, '', {
+      fontSize: '32px',
+      color: '#fff',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      padding: { x: 10, y: 5 }
+    }).setOrigin(0.5);
+
+    // Waypoints
+    this.waypoints = [];
+    this.waypointGroup = this.add.group();
+
+    this.setupLevel();
   }
+  // game functions
+  setupLevel() {
+    const level = Levels[GameState.currentLevel];
+    if (!level) {
+      this.showInstruction('Alle Lieferungen abgeschlossen!');
+      return;
+    }
+
+    GameState.pickup = level.pickup;
+    GameState.deliveryPoints = level.deliveries;
+    GameState.deliveryIndex = 0;
+    GameState.hasPizza = false;
+
+    this.showInstruction('Fahre zur Pizzeria, um Pizza abzuholen!');
+    this.createWaypoints(this.player.x, this.player.y, GameState.pickup.x, GameState.pickup.y);
+
+  }
+  showInstruction(text) {
+    if (this.instructionText) {
+      this.instructionText.setText(text);
+    }
+  }
+  checkObjective() {
+    const px = this.player.x;
+    const py = this.player.y;
+
+    if (!GameState.hasPizza) {
+      if (Phaser.Math.Distance.Between(px, py, GameState.pickup.x, GameState.pickup.y) < 100) {
+        GameState.hasPizza = true;
+        this.showInstruction('Pizza abgeholt! Fahre zur Lieferadresse.');
+
+        const delivery = GameState.deliveryPoints[GameState.deliveryIndex];
+        if (delivery) {
+          this.createWaypoints(this.player.x, this.player.y, delivery.x, delivery.y);
+        }
+      }
+    } else {
+      const delivery = GameState.deliveryPoints[GameState.deliveryIndex];
+      if (delivery && Phaser.Math.Distance.Between(px, py, delivery.x, delivery.y) < 100) {
+        this.showInstruction('Pizza wurde abgeliefert!');
+        GameState.deliveryIndex++;
+
+        this.time.delayedCall(3000, () => {
+          if (GameState.deliveryIndex >= GameState.deliveryPoints.length) {
+            GameState.currentLevel++;
+            this.setupLevel();
+          } else {
+            this.showInstruction('Fahre zurück zur Pizzeria für die nächste Pizza.');
+            GameState.hasPizza = false;
+
+            // Jetzt auch beim Zurückfahren Wegpunkte anzeigen
+            this.createWaypoints(this.player.x, this.player.y, GameState.pickup.x, GameState.pickup.y);
+          }
+        });
+      }
+    }
+  }
+
+  createWaypoints(startX, startY, endX, endY) {
+    // Anzahl der Punkte (z. B. alle ~150 px)
+    console.log('Erzeuge Wegpunkte', startX, startY, endX, endY);
+    const dist = Phaser.Math.Distance.Between(startX, startY, endX, endY);
+    const steps = Math.max(1, Math.floor(dist / 150));
+
+    // Vektor
+    const dx = (endX - startX) / steps;
+    const dy = (endY - startY) / steps;
+
+    // Gruppe löschen
+    this.waypointGroup.clear(true, true);
+    this.waypoints = [];
+
+    for (let i = 1; i <= steps; i++) {
+      const x = startX + dx * i;
+      const y = startY + dy * i;
+
+      const wp = this.add.circle(x, y, 10, 0xff0000).setDepth(500);
+      this.waypointGroup.add(wp);
+      this.waypoints.push(wp);
+    }
+  }
+  checkWaypoints() {
+    this.waypoints.forEach((wp) => {
+      if (wp.active && Phaser.Math.Distance.Between(this.player.x, this.player.y, wp.x, wp.y) < 40) {
+        wp.destroy();
+      }
+    });
+  }
+  teleportPlayer(x, y) {
+    if (this.player) {
+      this.player.x = x;
+      this.player.y = y;
+
+      // Körper direkt aktualisieren
+      this.player.body.reset(x, y);
+
+      console.log(`Spieler teleportiert zu: (${x}, ${y})`);
+    }
+  }
+
+
+
+
+  // end of game functions
 
   update() {
     if (!this.player || !this.player.body) return;
@@ -293,6 +435,8 @@ class GameScene extends Phaser.Scene {
     if (this.keys.A.isDown) body.setVelocityX(-speed);
     if (this.keys.D.isDown) body.setVelocityX(speed);
 
+    this.checkObjective();
+    this.checkWaypoints();
   }
 }
 
