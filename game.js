@@ -13,14 +13,14 @@ const GameState = {
 
 const Levels = {
     1: {
-      pickup: { x: 500, y: 500 },
-      deliveries: [{ x: 1200, y: 800 }]
+      pickup: {x: 1215, y: 828},
+      deliveries: [{x: 915, y: 1168}]
     },
     2: {
-      pickup: { x: 500, y: 500 },
+      pickup: {x: 1215, y: 828},
       deliveries: [
-        { x: 1300, y: 700 },
-        { x: 1400, y: 500 }
+        {x: 2195, y: 315},
+        {x: 2881, y: 828}
       ]
     }
   };
@@ -323,6 +323,7 @@ class GameScene extends Phaser.Scene {
     this.load.tilemapTiledJSON('pizzamap', 'assets/map/city_map.json');
     this.load.image('tiles', 'assets/img/city_tilemap.png');
     this.load.image('player', 'assets/img/player.png');
+    this.load.image('customer', 'assets/img/player.png');
 
     // Optionaler Spieler-Sprite
   }
@@ -375,6 +376,9 @@ class GameScene extends Phaser.Scene {
     this.waypoints = [];
     this.waypointGroup = this.add.group();
 
+    this.customerSprite = null;
+
+
     this.setupLevel();
 
     this.menuButton = this.add.text(1700, 20, '☰', {
@@ -424,11 +428,19 @@ class GameScene extends Phaser.Scene {
         const delivery = GameState.deliveryPoints[GameState.deliveryIndex];
         if (delivery) {
           this.createWaypoints(this.player.x, this.player.y, delivery.x, delivery.y);
+
+          // ⬇️ HIER KUNDE SPAWNEN
+          this.spawnCustomer(delivery.x, delivery.y);
         }
       }
     } else {
       const delivery = GameState.deliveryPoints[GameState.deliveryIndex];
       if (delivery && Phaser.Math.Distance.Between(px, py, delivery.x, delivery.y) < 100) {
+        if (this.customerSprite) {
+          this.customerSprite.destroy();
+          this.customerSprite = null;
+        }
+
         this.showInstruction('Pizza wurde abgeliefert!');
         GameState.deliveryIndex++;
 
@@ -478,6 +490,16 @@ class GameScene extends Phaser.Scene {
       }
     });
   }
+  spawnCustomer(x, y) {
+    // Falls bereits ein Kunde da ist, zerstören
+    if (this.customerSprite) {
+      this.customerSprite.destroy();
+      this.customerSprite = null;
+    }
+
+    this.customerSprite = this.add.sprite(x, y, 'customer').setDepth(150);
+  }
+
   teleportPlayer(x, y) {
     if (this.player) {
       this.player.x = x;
