@@ -5,22 +5,26 @@ const GameSettings = {
 
 const GameState = {
   currentLevel: 1,
-  objectives: [],
-  deliveryPoints: [],
   deliveryIndex: 0,
-  hasPizza: false
+  hasPizza: false,
+  pickup: null,
+  deliveryPoints: [],
+  playerPos: null,
+  carPos: null,
+  inCar: false
 };
+
 
 const Levels = {
     1: {
-      pickup: {x: 1215, y: 828},
+      pickup: {x: 1215, y: 967},
       deliveries: [{x: 915, y: 1168}]
     },
     2: {
-      pickup: {x: 1215, y: 828},
+      pickup: {x: 1215, y: 967},
       deliveries: [
         {x: 2195, y: 315},
-        {x: 2881, y: 828}
+        {x: 2879, y: 980}
       ]
     }
   };
@@ -413,6 +417,29 @@ class GameScene extends Phaser.Scene {
   }
   // game functions
   setupLevel() {
+    // Falls Positionen gespeichert → wiederherstellen
+    if (GameState.playerPos) {
+      this.player.x = GameState.playerPos.x;
+      this.player.y = GameState.playerPos.y;
+      this.player.body.reset(GameState.playerPos.x, GameState.playerPos.y);
+    }
+
+    if (GameState.carPos) {
+      this.car.x = GameState.carPos.x;
+      this.car.y = GameState.carPos.y;
+      this.car.body.reset(GameState.carPos.x, GameState.carPos.y);
+    }
+
+    this.inCar = GameState.inCar || false;
+    if (this.inCar) {
+      this.player.setVisible(false);
+      this.cameras.main.startFollow(this.car);
+    } else {
+      this.player.setVisible(true);
+      this.cameras.main.startFollow(this.player);
+    }
+
+    // Level-Setup
     const level = Levels[GameState.currentLevel];
     if (!level) {
       this.showInstruction('Alle Lieferungen abgeschlossen!');
@@ -421,13 +448,20 @@ class GameScene extends Phaser.Scene {
 
     GameState.pickup = level.pickup;
     GameState.deliveryPoints = level.deliveries;
-    GameState.deliveryIndex = 0;
-    GameState.hasPizza = false;
 
-    this.showInstruction('Fahre zur Pizzeria, um Pizza abzuholen!');
-    this.createWaypoints(this.player.x, this.player.y, GameState.pickup.x, GameState.pickup.y);
-
+    if (!GameState.hasPizza) {
+      this.showInstruction('Fahre zur Pizzeria, um Pizza abzuholen!');
+      this.createWaypoints(this.player.x, this.player.y, GameState.pickup.x, GameState.pickup.y);
+    } else {
+      const delivery = GameState.deliveryPoints[GameState.deliveryIndex];
+      if (delivery) {
+        this.showInstruction('Fahre zur Lieferadresse!');
+        this.createWaypoints(this.player.x, this.player.y, delivery.x, delivery.y);
+        this.spawnCustomer(delivery.x, delivery.y);
+      }
+    }
   }
+
   showInstruction(text) {
     if (this.instructionText) {
       this.instructionText.setText(text);
@@ -457,6 +491,16 @@ class GameScene extends Phaser.Scene {
           this.customerSprite.destroy();
           this.customerSprite = null;
         }
+
+        // Vorher speichern
+        GameState.playerPos = { x: this.player.x, y: this.player.y };
+        GameState.carPos = { x: this.car.x, y: this.car.y };
+        GameState.inCar = this.inCar;
+
+
+        // Scene wechseln
+        this.scene.start('DeliveryCutsceneScene');
+
 
         this.showInstruction('Pizza wurde abgeliefert!');
         GameState.deliveryIndex++;
@@ -702,12 +746,88 @@ class GameScene extends Phaser.Scene {
 
 }
 
+class DeliveryCutsceneScene extends Phaser.Scene {
+  constructor() {
+    super('DeliveryCutsceneScene');
+  }
+
+  preload() {
+    this.load.image('box', 'assets/img/box.png');
+    this.load.image('pizza', 'assets/img/pizza.png');
+    this.load.image('customer', 'assets/img/player.png');
+  }
+
+  create() {
+    this.add.text(400, 50, 'Übergabe', { fontSize: '32px', color: '#fff' }).setOrigin(0.5);
+
+    // Kunde
+    const customer = this.add.sprite(700, 500, 'customer');
+
+    // Box
+    const box = this.add.image(400, 500, 'box');
+
+    // Pizza (als Kreis oder Sprite)
+    this.pizza = this.add.image(400, 500, 'pizza').setInteractive();
+    this.input.setDraggable(this.pizza);
+
+    this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+      gameObject.x = dragX;
+      gameObject.y = dragY;
+    });
+
+    this.input.on('dragend', (pointer, gameObject) => {
+      const dist = Phaser.Math.Distance.Between(gameObject.x, gameObject.y, customer.x, customer.y);
+      if (dist < 100) {
+        // Pizza "übergeben"
+        gameObject.destroy();
+        this.add.text(400, 600, 'Pizza übergeben!', { fontSize: '28px', color: '#0f0' }).setOrigin(0.5);
+
+        // Status anpassen — NICHT sofort deliveryIndex++
+        let nextIndex = GameState.deliveryIndex + 1;
+
+        if (nextIndex < GameState.deliveryPoints.length) {
+          // Noch weitere Lieferungen im aktuellen Level
+          GameState.deliveryIndex = nextIndex;
+          GameState.hasPizza = false; // Muss wieder zur Pizzeria
+        } else {
+          // Aktuelles Level fertig
+          GameState.currentLevel++;
+          const nextLevel = Levels[GameState.currentLevel];
+          if (nextLevel) {
+            GameState.pickup = nextLevel.pickup;
+            GameState.deliveryPoints = nextLevel.deliveries;
+            GameState.deliveryIndex = 0;
+            GameState.hasPizza = false; // Muss wieder zur neuen Pizzeria
+
+            if (nextLevel.deliveries.length === 1) {
+              GameState.hasPizza = false;
+            }
+          } else {
+            // Kein weiteres Level
+            GameState.hasPizza = false;
+          }
+        }
+
+        this.time.delayedCall(2000, () => {
+          this.scene.start('GameScene');
+        });
+      } else {
+        // Zurück in die Box
+        gameObject.x = 400;
+        gameObject.y = 500;
+      }
+    });
+
+  }
+}
+
+
 
 const config = {
   type: Phaser.AUTO,
   width: 1920,
   height: 1028,
-  scene: [LoadingScene, MusicManagerScene, MainMenuScene, SettingsScene, CreditsScene, GameScene],
+  scene: [LoadingScene, MusicManagerScene, MainMenuScene, SettingsScene, CreditsScene, GameScene, DeliveryCutsceneScene],
   backgroundColor: '#000',
   physics: {
     default: 'arcade',
