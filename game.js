@@ -375,6 +375,8 @@ class GameScene extends Phaser.Scene {
     // Waypoints
     this.waypoints = [];
     this.waypointGroup = this.add.group();
+    this.currentWaypointTarget = null;
+    this.waypointUpdateTimer = 0;
 
     this.customerSprite = null;
 
@@ -461,16 +463,12 @@ class GameScene extends Phaser.Scene {
   }
 
   createWaypoints(startX, startY, endX, endY) {
-    // Anzahl der Punkte (z. B. alle ~150 px)
-    console.log('Erzeuge Wegpunkte', startX, startY, endX, endY);
     const dist = Phaser.Math.Distance.Between(startX, startY, endX, endY);
     const steps = Math.max(1, Math.floor(dist / 150));
 
-    // Vektor
     const dx = (endX - startX) / steps;
     const dy = (endY - startY) / steps;
 
-    // Gruppe löschen
     this.waypointGroup.clear(true, true);
     this.waypoints = [];
 
@@ -483,6 +481,7 @@ class GameScene extends Phaser.Scene {
       this.waypoints.push(wp);
     }
   }
+
   checkWaypoints() {
     this.waypoints.forEach((wp) => {
       if (wp.active && Phaser.Math.Distance.Between(this.player.x, this.player.y, wp.x, wp.y) < 40) {
@@ -599,9 +598,8 @@ class GameScene extends Phaser.Scene {
 
   // end of game functions
 
-  update() {
+  update(time, delta) {
     if (!this.player || !this.player.body) return;
-    //if (this.menuVisible) return;
 
     const speed = 400;
     const body = this.player.body;
@@ -614,7 +612,33 @@ class GameScene extends Phaser.Scene {
 
     this.checkObjective();
     this.checkWaypoints();
+
+    // Nur alle 500 ms aktualisieren
+    this.waypointUpdateTimer += delta;
+    if (this.waypointUpdateTimer >= 500) {
+      this.waypointUpdateTimer = 0;
+
+      let target = null;
+      if (!GameState.hasPizza) {
+        target = GameState.pickup;
+      } else if (GameState.deliveryPoints[GameState.deliveryIndex]) {
+        target = GameState.deliveryPoints[GameState.deliveryIndex];
+      }
+
+      if (target) {
+        const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, target.x, target.y);
+        if (dist > 100) {
+          this.createWaypoints(this.player.x, this.player.y, target.x, target.y);
+          this.currentWaypointTarget = target;
+        } else {
+          this.waypointGroup.clear(true, true);
+          this.waypoints = [];
+        }
+      }
+    }
   }
+
+
 }
 
 
