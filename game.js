@@ -347,6 +347,7 @@ class GameScene extends Phaser.Scene {
     const tileset = map.addTilesetImage('city_tilemap', 'tiles'); // name in Tiled + image key
     const groundLayer = map.createLayer('Ground', tileset, 0, 0); // Layername wie in Tiled
     const ObjectLayer = map.createLayer('Objects', tileset, 0, 0); // Layername wie in Tiled
+    ObjectLayer.setCollisionByExclusion([-1]);
 
     // Spieler hinzufügen
     this.player = this.physics.add.sprite(768, 768, 'player'); // ← wichtig: physics.add!
@@ -358,6 +359,10 @@ class GameScene extends Phaser.Scene {
 
     this.car = this.physics.add.sprite(500, 500, 'car');
     this.car.setCollideWorldBounds(true);
+
+    // adding collision
+    this.physics.add.collider(this.player, ObjectLayer);
+    this.physics.add.collider(this.car, ObjectLayer);
 
 
 
