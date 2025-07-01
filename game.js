@@ -324,6 +324,7 @@ class GameScene extends Phaser.Scene {
     this.load.image('tiles', 'assets/img/city_tilemap.png');
     this.load.image('player', 'assets/img/player.png');
     this.load.image('customer', 'assets/img/player.png');
+    this.load.image('car', 'assets/img/car.png');
 
     // Optionaler Spieler-Sprite
   }
@@ -351,6 +352,14 @@ class GameScene extends Phaser.Scene {
     this.player = this.physics.add.sprite(768, 768, 'player'); // ← wichtig: physics.add!
     this.player.setCollideWorldBounds(true);
 
+    // Car
+    this.inCar = false;
+    this.carVelocity = { x: 0, y: 0 }; // Für „Nachschieben“
+
+    this.car = this.physics.add.sprite(500, 500, 'car');
+    this.car.setCollideWorldBounds(true);
+
+
 
     // Kamera folgt Spieler
     this.cameras.main.startFollow(this.player);
@@ -359,8 +368,9 @@ class GameScene extends Phaser.Scene {
     // Physik-Bereich auf Mapgröße begrenzen
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    // WASD
+    // WASD & F
     this.keys = this.input.keyboard.addKeys('W,A,S,D');
+    this.fKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
 
     applyBrightness(this);
 
@@ -601,14 +611,55 @@ class GameScene extends Phaser.Scene {
   update(time, delta) {
     if (!this.player || !this.player.body) return;
 
-    const speed = 400;
+    const speed = 200;
     const body = this.player.body;
-    body.setVelocity(0);
 
-    if (this.keys.W.isDown) body.setVelocityY(-speed);
-    if (this.keys.S.isDown) body.setVelocityY(speed);
-    if (this.keys.A.isDown) body.setVelocityX(-speed);
-    if (this.keys.D.isDown) body.setVelocityX(speed);
+    // F drücken → einsteigen oder aussteigen
+    if (Phaser.Input.Keyboard.JustDown(this.fKey)) {
+      if (!this.inCar) {
+        const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.car.x, this.car.y);
+        if (dist < 100) {
+          // Einsteigen
+          this.inCar = true;
+          this.player.setVisible(false);
+          this.cameras.main.startFollow(this.car);
+        }
+      } else {
+        // Aussteigen
+        this.inCar = false;
+        this.player.x = this.car.x;
+        this.player.y = this.car.y;
+        this.player.body.reset(this.car.x, this.car.y);
+        this.player.setVisible(true);
+        this.cameras.main.startFollow(this.player);
+        this.car.setVelocity(0, 0);
+        this.carVelocity = { x: 0, y: 0 };
+      }
+    }
+
+    if (!this.inCar) {
+      body.setVelocity(0);
+
+      if (this.keys.W.isDown) body.setVelocityY(-speed);
+      if (this.keys.S.isDown) body.setVelocityY(speed);
+      if (this.keys.A.isDown) body.setVelocityX(-speed);
+      if (this.keys.D.isDown) body.setVelocityX(speed);
+    } else {
+      const carSpeed = 600; // schneller als Spieler
+      let targetVX = 0;
+      let targetVY = 0;
+
+      if (this.keys.W.isDown) targetVY = -carSpeed;
+      if (this.keys.S.isDown) targetVY = carSpeed;
+      if (this.keys.A.isDown) targetVX = -carSpeed;
+      if (this.keys.D.isDown) targetVX = carSpeed;
+
+      // „Nachschieben“ (einfache Trägheit)
+      this.carVelocity.x += (targetVX - this.carVelocity.x) * 0.1;
+      this.carVelocity.y += (targetVY - this.carVelocity.y) * 0.1;
+
+      this.car.setVelocity(this.carVelocity.x, this.carVelocity.y);
+    }
 
     this.checkObjective();
     this.checkWaypoints();
@@ -626,9 +677,12 @@ class GameScene extends Phaser.Scene {
       }
 
       if (target) {
-        const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, target.x, target.y);
+        const currentX = this.inCar ? this.car.x : this.player.x;
+        const currentY = this.inCar ? this.car.y : this.player.y;
+
+        const dist = Phaser.Math.Distance.Between(currentX, currentY, target.x, target.y);
         if (dist > 100) {
-          this.createWaypoints(this.player.x, this.player.y, target.x, target.y);
+          this.createWaypoints(currentX, currentY, target.x, target.y);
           this.currentWaypointTarget = target;
         } else {
           this.waypointGroup.clear(true, true);
@@ -636,7 +690,9 @@ class GameScene extends Phaser.Scene {
         }
       }
     }
+
   }
+
 
 
 }
