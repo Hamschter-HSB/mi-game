@@ -70,6 +70,6 @@ class DeliveryCutsceneScene extends Phaser.Scene {
         gameObject.y = 500;
       }
     });
-
+    applyBrightness(this);
   }
 }
