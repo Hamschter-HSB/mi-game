@@ -29,11 +29,20 @@ const Levels = {
 };
 
 function applyBrightness(scene) {
-  scene.brightnessOverlay = scene.add.rectangle(0, 0, 800, 600, 0x000000)
+  const cam = scene.cameras.main;
+
+  scene.brightnessOverlay = scene.add.rectangle(
+      0, 0,
+      cam.width,
+      cam.height,
+      0x000000
+    )
     .setOrigin(0)
+    .setScrollFactor(0) // <- damit es fix bleibt
     .setAlpha(getBrightnessAlpha())
     .setDepth(999);
 }
+
 
 function updateBrightnessOverlay(scene) {
   if (scene.brightnessOverlay) {
