@@ -2,14 +2,48 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>MI Game</title>
-  <style>
-    body { margin: 0; background: black; }
-    canvas { display: block; margin: auto; }
-  </style>
+  <title>Pizza Delivery Game - HSB</title>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
 </head>
 <body>
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
-  <script src="game.js"></script>
+
+  <script src="game/globals.js"></script>
+
+  <!-- Scenes -->
+  <script src="game/scenes/MusicManagerScene.js"></script>
+  <script src="game/scenes/LoadingScene.js"></script>
+  <script src="game/scenes/MainMenuScene.js"></script>
+  <script src="game/scenes/SettingsScene.js"></script>
+  <script src="game/scenes/CreditsScene.js"></script>
+  <script src="game/scenes/GameScene.js"></script>
+  <script src="game/scenes/DeliveryCutsceneScene.js"></script>
+
+  <!-- Game Init -->
+  <script>
+    const config = {
+      type: Phaser.AUTO,
+      width: 1920,
+      height: 1028,
+      scene: [
+        LoadingScene,
+        MusicManagerScene,
+        MainMenuScene,
+        SettingsScene,
+        CreditsScene,
+        GameScene,
+        DeliveryCutsceneScene
+      ],
+      backgroundColor: '#000',
+      physics: {
+        default: 'arcade',
+        arcade: {
+          gravity: { y: 0 },
+          debug: false
+        }
+      }
+    };
+
+    new Phaser.Game(config);
+  </script>
 </body>
 </html>
