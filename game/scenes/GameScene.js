@@ -62,6 +62,7 @@ class GameScene extends Phaser.Scene {
     // WASD & F
     this.keys = this.input.keyboard.addKeys('W,A,S,D');
     this.fKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
+    this.hKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H);
 
     applyBrightness(this);
 
@@ -411,6 +412,12 @@ class GameScene extends Phaser.Scene {
         this.carVelocity = { x: 0, y: 0 };
       }
     }
+
+    if (Phaser.Input.Keyboard.JustDown(this.hKey)) {
+      if (this.inCar) {
+          this.sound.play('hornSound', { volume: GameSettings.volume });
+       }
+      }
 
     if (!this.inCar) {
       body.setVelocity(0);
