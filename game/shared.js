@@ -1,5 +1,5 @@
 const GameSettings = {
-  volume: 1,
+  volume: 0.3,
   brightness: 1
 };
 
