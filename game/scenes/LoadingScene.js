@@ -13,6 +13,7 @@ class LoadingScene extends Phaser.Scene {
 
   create() {
     const bg = this.add.image(0, 0, 'loadingBG').setOrigin(0);
+    this.scene.launch('MusicManagerScene');
 
     // Bildschirmgröße
     const screenWidth = this.cameras.main.width;
@@ -30,7 +31,7 @@ class LoadingScene extends Phaser.Scene {
     this.add.text(
         screenWidth / 2,
         screenHeight - bannerHeight / 2,
-        'Lade Pizza in die Box...',
+        'Packe Pizza in die Box...',
         { fontSize: '20px', color: '#ffffff' }
     ).setOrigin(0.5);
 
@@ -49,14 +50,8 @@ class LoadingScene extends Phaser.Scene {
         (screenHeight - imgHeight * scale) / 2
     );
 
-    // Lade-Text
-    this.add.text(screenWidth / 2, screenHeight - 50, 'Lade Spiel...', {
-        fontSize: '28px',
-        color: '#ffffff'
-    }).setOrigin(0.5);
-
     // Nach 3 Sekunden weiter
-    this.time.delayedCall(3000, () => this.scene.start('MainMenuScene'));
+    this.time.delayedCall(3000, () => this.scene.start('Press2PlayScene'));
     }
 
 }
