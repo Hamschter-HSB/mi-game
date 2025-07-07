@@ -9,6 +9,7 @@ class GameScene extends Phaser.Scene {
     this.load.image('tiles', 'assets/img/city_tilemap.png');
     this.load.image('player', 'assets/img/player.png');
     this.load.image('customer', 'assets/img/player.png');
+    this.load.image('npc', 'assets/img/npc.jpg');
     this.load.image('car', 'assets/img/car.png');
 
     // Optionaler Spieler-Sprite
@@ -95,6 +96,36 @@ class GameScene extends Phaser.Scene {
       this.toggleMenu();
     });
 
+    // NPC's erstellen und hinzufügen
+    this.npcs = this.add.group();
+    const amountOfNPCS = 4
+
+    for (let i = 0; i < amountOfNPCS; i++) {
+      const npc = this.physics.add.sprite(100, 100, 'npc');
+      npc.setCollideWorldBounds(true); // bleibt im Weltbereich
+
+      // Richtungswerte speichern
+      npc.dx = 0;
+      npc.dy = 0;
+
+      this.npcs.add(npc);
+    }
+
+    // Bewegung starten
+    this.changeDirection();
+
+    // Collision
+    this.physics.add.collider(this.npcs, ObjectLayer);
+    this.physics.add.collider(this.npcs, this.npcs);
+
+    // Alle paar Sekunden Richtung ändern
+    this.time.addEvent({
+      delay: 2000,
+      callback: this.changeDirection,
+      callbackScope: this,
+      loop: true
+    });
+
   }
   // game functions
   setupLevel() {
@@ -141,6 +172,29 @@ class GameScene extends Phaser.Scene {
         this.spawnCustomer(delivery.x, delivery.y);
       }
     }
+  }
+
+  updateNPC() {
+    this.npcs.children.iterate(npc => {
+      this.npcSpeed = 25;
+      npc.setVelocity(npc.dx * this.npcSpeed, npc.dy * this.npcSpeed);
+    });
+  }
+
+  changeDirection() {
+    const directions = [
+      { dx: 7, dy: 0 },
+      { dx: -7, dy: 0 },
+      { dx: 0, dy: 7 },
+      { dx: 0, dy: -7  },
+      { dx: 0, dy: 0 }
+    ];
+
+    this.npcs.children.iterate(npc => {
+      const dir = Phaser.Math.RND.pick(directions);
+      npc.dx = dir.dx;
+      npc.dy = dir.dy;
+    });
   }
 
   showInstruction(text) {
@@ -332,7 +386,7 @@ class GameScene extends Phaser.Scene {
   update(time, delta) {
     if (!this.player || !this.player.body) return;
 
-    const speed = 200;
+    const playerSpeed = 200;
     const body = this.player.body;
 
     // F drücken → einsteigen oder aussteigen
@@ -361,10 +415,10 @@ class GameScene extends Phaser.Scene {
     if (!this.inCar) {
       body.setVelocity(0);
 
-      if (this.keys.W.isDown) body.setVelocityY(-speed);
-      if (this.keys.S.isDown) body.setVelocityY(speed);
-      if (this.keys.A.isDown) body.setVelocityX(-speed);
-      if (this.keys.D.isDown) body.setVelocityX(speed);
+      if (this.keys.W.isDown) body.setVelocityY(-playerSpeed);
+      if (this.keys.S.isDown) body.setVelocityY(playerSpeed);
+      if (this.keys.A.isDown) body.setVelocityX(-playerSpeed);
+      if (this.keys.D.isDown) body.setVelocityX(playerSpeed);
     } else {
       const carSpeed = 600; // schneller als Spieler
       let targetVX = 0;
@@ -412,5 +466,6 @@ class GameScene extends Phaser.Scene {
       }
     }
 
+    this.updateNPC();
   }
 }
