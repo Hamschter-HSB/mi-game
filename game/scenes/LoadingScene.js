@@ -6,52 +6,50 @@ class LoadingScene extends Phaser.Scene {
   preload() {
     this.load.audio('menuMusic', ['assets/music/menu.mp3']);
     this.load.audio('clickSound', ['assets/sounds/click.mp3']);
-    console.log("preloaded audio");
     this.load.image('loadingBG', 'assets/img/pizza-bg.png');
-    }
-
+    this.load.image('pizzy', 'assets/img/pizzy.png');
+    console.log("preloaded assets");
+  }
 
   create() {
-    const bg = this.add.image(0, 0, 'loadingBG').setOrigin(0);
-    this.scene.launch('MusicManagerScene');
-
-    // Bildschirmgröße
     const screenWidth = this.cameras.main.width;
     const screenHeight = this.cameras.main.height;
 
-    const bannerHeight = 50;
-    this.add.rectangle(
-        screenWidth / 2,
-        screenHeight - bannerHeight / 2,
-        screenWidth,
-        bannerHeight,
-        0x000000,
-        0.6 // Alpha = 60 % sichtbar
-    );
-    this.add.text(
-        screenWidth / 2,
-        screenHeight - bannerHeight / 2,
-        'Packe Pizza in die Box...',
-        { fontSize: '20px', color: '#ffffff' }
-    ).setOrigin(0.5);
+    this.scene.launch('MusicManagerScene');
 
-    // Bildgröße
+    // Hintergrundbild skalieren und zentrieren
+    const bg = this.add.image(0, 0, 'loadingBG').setOrigin(0);
     const texture = this.textures.get('loadingBG').getSourceImage();
-    const imgWidth = texture.width;
-    const imgHeight = texture.height;
-
-    // Skaliere das Bild so, dass es den Bildschirm vollständig abdeckt (cover)
-    const scale = Math.max(screenWidth / imgWidth, screenHeight / imgHeight);
+    const scale = Math.max(screenWidth / texture.width, screenHeight / texture.height);
     bg.setScale(scale);
-
-    // Zentriere das Bild nach Skalierung
     bg.setPosition(
-        (screenWidth - imgWidth * scale) / 2,
-        (screenHeight - imgHeight * scale) / 2
+      (screenWidth - texture.width * scale) / 2,
+      (screenHeight - texture.height * scale) / 2
     );
 
-    // Nach 3 Sekunden weiter
-    this.time.delayedCall(3000, () => this.scene.start('Press2PlayScene'));
-    }
+    // pizzy unten mittig positionieren (aber nicht zu nah am Rand!)
+    const pizzy = this.add.image(0, 0, 'pizzy')
+      .setOrigin(0.5)
+      .setScale(0.4)
+      .setScrollFactor(0); // bleibt fix im Sichtbereich (wie UI)
 
+    const pizzyHeight = pizzy.displayHeight;
+    const margin = 20;
+    pizzy.setPosition(screenWidth / 2, screenHeight - pizzyHeight / 2 - margin);
+
+    // Rotation um sich selbst (nicht im Kreis)
+    this.pizzy = pizzy;
+
+    // Szenewechsel nach 3 Sekunden
+    this.time.delayedCall(3000, () => {
+      this.scene.start('Press2PlayScene');
+    });
+  }
+
+  update() {
+    // Drehung um eigene Achse
+    if (this.pizzy) {
+      this.pizzy.angle += 2; // Geschwindigkeit einstellbar
+    }
+  }
 }
