@@ -27,15 +27,14 @@ class MainMenuScene extends Phaser.Scene {
       (width - texture.width * scale) / 2,
       (height - texture.height * scale) / 2
     );
-    bg.setAlpha(0.5); // <--- Etwas mehr Transparenz
+    bg.setAlpha(0.5); // leicht transparent
 
-    // Homescreen-Titelbild (Logo) größer und zentriert
+    // Titelbild (Logo)
     const title = this.add.image(width / 2, height / 5, 'homescreenTitle')
       .setOrigin(0.5)
       .setScale(0.9);
 
-
-    // Button-Konfiguration
+    // Menü-Buttons
     const buttons = [];
 
     buttons.push({
@@ -78,7 +77,7 @@ class MainMenuScene extends Phaser.Scene {
     const buttonScale = 0.5;
     const buttonSpacing = 10;
     const totalHeight = buttons.length * 100 * buttonScale + (buttons.length - 1) * buttonSpacing;
-    let startY = height / 2 - totalHeight / 2 + 80; // etwas tiefer wegen größerem Logo
+    let startY = height / 2 - totalHeight / 2 + 80;
 
     buttons.forEach(btn => {
       const image = this.add.image(width / 2, startY, btn.key)
@@ -94,5 +93,56 @@ class MainMenuScene extends Phaser.Scene {
     });
 
     applyBrightness(this);
+
+    // === SLIDER-Bereich: Lautstärke & Helligkeit ===
+
+    const createSlider = (x, y, height, value, onChange, invert = false) => {
+      const track = this.add.rectangle(x, y, 6, height, 0xffffff, 0.3).setOrigin(0.5);
+
+      const thumbY = invert
+        ? y - height / 2 + (1 - value) * height
+        : y - height / 2 + value * height;
+
+      const thumb = this.add.rectangle(x, thumbY, 16, 16, 0xffffff)
+        .setOrigin(0.5)
+        .setInteractive({ draggable: true });
+
+      const updateValue = (dragY) => {
+        dragY = Phaser.Math.Clamp(dragY, y - height / 2, y + height / 2);
+        thumb.y = dragY;
+
+        let percent = (dragY - (y - height / 2)) / height;
+        if (invert) percent = 1 - percent;
+
+        onChange(Phaser.Math.Clamp(percent, 0, 1));
+      };
+
+      thumb.on('drag', (pointer, dragX, dragY) => {
+        updateValue(dragY);
+      });
+
+      thumb.on('dragend', (pointer, dragX, dragY) => {
+        updateValue(dragY);
+      });
+    };
+
+    const sliderHeight = 100;
+    const sliderX = 40;
+
+    // Lautstärke-Slider (unten leise, oben laut)
+    createSlider(
+      sliderX,
+      height - sliderHeight - 40,
+      sliderHeight,
+      GameSettings.volume,
+      (v) => {
+        GameSettings.volume = v;
+        this.sound.volume = v;
+      },
+      false // nicht invertiert
+    );
+
+    // Drag-Handling aktivieren
+    this.input.setDraggable(this.children.getAll().filter(obj => obj.input && obj.input.draggable));
   }
 }
