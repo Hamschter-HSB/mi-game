@@ -4,9 +4,13 @@ class MainMenuScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('loadingBG', 'assets/img/pizza-bg.png');
+    this.load.image('BG', 'assets/img/ui/Background.png');
+    this.load.image('homescreenTitle', 'assets/img/logo.png');
+    this.load.image('btnNewGame', 'assets/img/ui/NewGame.png');
+    this.load.image('btnContinue', 'assets/img/ui/Continue.png');
+    this.load.image('btnSettings', 'assets/img/ui/Settings.png');
+    this.load.image('btnCredits', 'assets/img/ui/Credits.png');
   }
-
 
   create() {
     const { width, height } = this.scale;
@@ -14,79 +18,81 @@ class MainMenuScene extends Phaser.Scene {
     this.sound.volume = GameSettings.volume;
     this.scene.get('MusicManagerScene').playMusic(this);
 
-    const bg = this.add.image(0, 0, 'loadingBG').setOrigin(0);
-
-    // Hintergrund skalieren
-    const texture = this.textures.get('loadingBG').getSourceImage();
-    const imgWidth = texture.width;
-    const imgHeight = texture.height;
-    const scale = Math.max(width / imgWidth, height / imgHeight);
+    // Hintergrundbild
+    const bg = this.add.image(0, 0, 'BG').setOrigin(0);
+    const texture = this.textures.get('BG').getSourceImage();
+    const scale = Math.max(width / texture.width, height / texture.height);
     bg.setScale(scale);
     bg.setPosition(
-      (width - imgWidth * scale) / 2,
-      (height - imgHeight * scale) / 2
+      (width - texture.width * scale) / 2,
+      (height - texture.height * scale) / 2
     );
-    bg.setAlpha(0.3);
+    bg.setAlpha(0.5); // <--- Etwas mehr Transparenz
 
-    // Titel
-    this.add.text(width / 2, 100, 'Hauptmenü', {
-      fontSize: '32px',
-      color: '#fff'
-    }).setOrigin(0.5);
+    // Homescreen-Titelbild (Logo) größer und zentriert
+    const title = this.add.image(width / 2, height / 5, 'homescreenTitle')
+      .setOrigin(0.5)
+      .setScale(0.9);
 
-    // Buttons
-    const buttonSpacing = 50;
-    let y = 200;
 
-    const newGameBtn = this.add.text(width / 2, y, 'Neues Spiel', {
-      fontSize: '24px',
-      color: '#0f0'
-    }).setOrigin(0.5).setInteractive()
-      .on('pointerdown', () => {
+    // Button-Konfiguration
+    const buttons = [];
+
+    buttons.push({
+      key: 'btnNewGame',
+      callback: () => {
         GameState.currentLevel = 1;
         GameState.deliveryIndex = 0;
         GameState.hasPizza = false;
         this.sound.play('clickSound', { volume: GameSettings.volume });
         this.scene.start('GameScene');
-      });
+      }
+    });
 
-    y += buttonSpacing;
-
-    const continueBtn = this.add.text(width / 2, y, 'Fortsetzen', {
-      fontSize: '24px',
-      color: GameState.currentLevel === 1 ? '#555' : '#0ff'
-    }).setOrigin(0.5);
-
-    if (GameState.currentLevel !== 1) {
-      continueBtn.setInteractive().on('pointerdown', () => {
+    buttons.push({
+      key: 'btnContinue',
+      callback: () => {
         this.sound.play('clickSound', { volume: GameSettings.volume });
         this.scene.start('GameScene');
-      });
-    }
+      },
+      disabled: GameState.currentLevel === 1
+    });
 
-    y += buttonSpacing;
-
-    this.add.text(width / 2, y, 'Einstellungen', {
-      fontSize: '24px',
-      color: '#0ff'
-    }).setOrigin(0.5).setInteractive()
-      .on('pointerdown', () => {
+    buttons.push({
+      key: 'btnSettings',
+      callback: () => {
         this.sound.play('clickSound', { volume: GameSettings.volume });
         this.scene.start('SettingsScene');
-      });
+      }
+    });
 
-    y += buttonSpacing;
-
-    this.add.text(width / 2, y, 'Credits', {
-      fontSize: '24px',
-      color: '#ff0'
-    }).setOrigin(0.5).setInteractive()
-      .on('pointerdown', () => {
+    buttons.push({
+      key: 'btnCredits',
+      callback: () => {
         this.sound.play('clickSound', { volume: GameSettings.volume });
         this.scene.start('CreditsScene');
-      });
+      }
+    });
+
+    // Buttons anzeigen
+    const buttonScale = 0.5;
+    const buttonSpacing = 10;
+    const totalHeight = buttons.length * 100 * buttonScale + (buttons.length - 1) * buttonSpacing;
+    let startY = height / 2 - totalHeight / 2 + 80; // etwas tiefer wegen größerem Logo
+
+    buttons.forEach(btn => {
+      const image = this.add.image(width / 2, startY, btn.key)
+        .setOrigin(0.5)
+        .setScale(buttonScale)
+        .setAlpha(btn.disabled ? 0.3 : 1);
+
+      if (!btn.disabled) {
+        image.setInteractive({ useHandCursor: true }).on('pointerdown', btn.callback);
+      }
+
+      startY += image.displayHeight + buttonSpacing;
+    });
 
     applyBrightness(this);
   }
-
 }
