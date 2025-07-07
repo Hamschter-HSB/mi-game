@@ -7,7 +7,7 @@ class LoadingScene extends Phaser.Scene {
     this.load.audio('menuMusic', ['assets/music/menu.mp3']);
     this.load.audio('clickSound', ['assets/sounds/click.mp3']);
     console.log("preloaded audio");
-    this.load.image('loadingBG', 'assets/img/bg_loading.jpg');
+    this.load.image('loadingBG', 'assets/img/pizza-bg.png');
     }
 
 
