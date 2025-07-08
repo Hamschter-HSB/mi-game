@@ -38,6 +38,10 @@ class GameScene extends Phaser.Scene {
     // Spieler hinzufügen
     this.player = this.physics.add.sprite(768, 768, 'player'); // ← wichtig: physics.add!
     this.player.setCollideWorldBounds(true);
+    this.walkSound = this.sound.add('walkSound', {
+      volume: GameSettings.volume,
+      loop: true // Sound soll bei gedrückter Taste durchgehend spielen
+    });
 
     // Car
     this.inCar = false;
@@ -417,11 +421,20 @@ class GameScene extends Phaser.Scene {
       }
     }
 
+    // Player walk-sound
+
+    const isWalkingKeyDown = this.keys.W.isDown || this.keys.A.isDown || this.keys.S.isDown || this.keys.D.isDown;
+
+    if (!this.inCar && isWalkingKeyDown && !this.walkSound.isPlaying)
+      this.walkSound.play();
+
+    if (!this.inCar && !isWalkingKeyDown && this.walkSound.isPlaying)
+      this.walkSound.stop();
+
     if (Phaser.Input.Keyboard.JustDown(this.hKey)) {
-      if (this.inCar) {
+      if (this.inCar)
           this.sound.play('hornSound', { volume: GameSettings.volume });
-       }
-      }
+    }
 
     if (!this.inCar) {
       body.setVelocity(0);

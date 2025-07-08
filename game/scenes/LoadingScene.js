@@ -6,6 +6,7 @@ class LoadingScene extends Phaser.Scene {
   preload() {
     this.load.audio('menuMusic', ['assets/music/menu.mp3']);
     this.load.audio('clickSound', ['assets/sounds/click.mp3']);
+    this.load.audio('walkSound', ['assets/sounds/walkSound.mp3']);
     this.load.audio('hornSound', ['assets/sounds/hornSound.mp3']);
     this.load.audio('IgnitionSound', ['assets/sounds/ignitionSound.mp3']);
     this.load.image('loadingBG', 'assets/img/pizza-bg.png');
