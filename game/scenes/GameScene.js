@@ -12,6 +12,11 @@ class GameScene extends Phaser.Scene {
     this.load.image('npc', 'assets/img/npc.jpg');
     this.load.image('car', 'assets/img/car.png');
 
+    this.load.image('menuOverlay', 'assets/img/Logo.png');
+    this.load.image('resumeBtn', 'assets/img/ui/Resume.png');
+    this.load.image('exitBtn', 'assets/img/ui/Exit.png');
+
+
     // Optionaler Spieler-Sprite
   }
 
@@ -318,73 +323,73 @@ class GameScene extends Phaser.Scene {
 
 
   toggleMenu() {
+    const width = this.scale.width;
+    const height = this.scale.height;
+
     if (this.menuVisible) {
-      this.menuBG.setVisible(false);
-      this.menuTitle.setVisible(false);
-      this.resumeButton.setVisible(false);
-      this.mainMenuButton.setVisible(false);
+      this.menuElements.forEach(e => e.setVisible(false));
       this.menuVisible = false;
     } else {
-      // Falls Buttons noch nicht existieren → anlegen
-      if (!this.menuBG) {
-        this.menuBG = this.add.rectangle(960, 514, 800, 600, 0x000000, 0.8).setScrollFactor(0).setDepth(9999);
-        this.menuTitle = this.add.text(960, 300, 'Pause-Menü', { fontSize: '48px', color: '#fff' }).setOrigin(0.5).setScrollFactor(0).setDepth(9999);
+      if (!this.menuElements) {
+        this.menuElements = [];
 
-        this.resumeButton = this.add.text(960, 400, 'Weiterspielen', { fontSize: '32px', color: '#0f0' })
-          .setOrigin(0.5)
+        // Overlay
+        const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6)
           .setScrollFactor(0)
-          .setDepth(9999)
+          .setDepth(9999);
+        this.menuElements.push(overlay);
+
+        // Dynamische Skalierung
+        const logoScale = width / 1920 * 0.9;
+        const buttonScale = width / 1920 * 0.4;
+
+        // Logo
+        const logo = this.add.image(width / 2, height * 0.2, 'menuOverlay')
+          .setOrigin(0.5)
+          .setScale(logoScale)
+          .setScrollFactor(0)
+          .setDepth(10000);
+        this.menuElements.push(logo);
+
+        // Resume Button
+        const resumeBtn = this.add.image(width / 2, height * 0.45, 'resumeBtn')
+          .setOrigin(0.5)
+          .setScale(buttonScale)
+          .setScrollFactor(0)
+          .setDepth(10000)
           .setInteractive()
-          .on('pointerdown', () => {
-            this.toggleMenu();
-          });
+          .on('pointerdown', () => this.toggleMenu());
+        this.menuElements.push(resumeBtn);
 
-        this.mainMenuButton = this.add.text(960, 480, 'Zum Hauptmenü', { fontSize: '32px', color: '#f00' })
+        // Exit Button
+        const exitBtn = this.add.image(width / 2, height * 0.58, 'exitBtn')
           .setOrigin(0.5)
+          .setScale(buttonScale)
           .setScrollFactor(0)
-          .setDepth(9999)
+          .setDepth(10000)
           .setInteractive()
           .on('pointerdown', () => {
             this.sound.play('clickSound', { volume: GameSettings.volume });
             this.scene.start('MainMenuScene');
           });
+        this.menuElements.push(exitBtn);
+      } else {
+        // Falls bereits erstellt → nur neu positionieren & anzeigen
+        const [overlay, logo, resumeBtn, exitBtn] = this.menuElements;
 
-        const restartButton = this.add.text(960, 560, 'Neustarten', { fontSize: '32px', color: '#ff0' })
-          .setOrigin(0.5)
-          .setScrollFactor(0)
-          .setDepth(9999)
-          .setInteractive()
-          .on('pointerdown', () => {
-            GameState.currentLevel = 1;
-            GameState.deliveryIndex = 0;
-            GameState.hasPizza = false;
-            this.menuBG.setVisible(false);
-            this.menuTitle.setVisible(false);
-            this.resumeButton.setVisible(false);
-            this.mainMenuButton.setVisible(false);
-            restartButton.setVisible(false);
-            this.menuVisible = false;
-            this.setupLevel();
-          });
+        overlay.setPosition(width / 2, height / 2).setSize(width, height);
+        logo.setPosition(width / 2, height * 0.2).setScale(width / 1920);
+        resumeBtn.setPosition(width / 2, height * 0.45).setScale(width / 1920);
+        exitBtn.setPosition(width / 2, height * 0.58).setScale(width / 1920);
 
-
-        // Erst unsichtbar
-        this.menuBG.setVisible(false);
-        this.menuTitle.setVisible(false);
-        this.resumeButton.setVisible(false);
-        this.mainMenuButton.setVisible(false);
-        restartButton.setVisible(false);
-        
+        this.menuElements.forEach(e => e.setVisible(true));
       }
 
-      this.menuBG.setVisible(true);
-      this.menuTitle.setVisible(true);
-      this.resumeButton.setVisible(true);
-      this.mainMenuButton.setVisible(true);
-      restartButton.setVisible(true);
       this.menuVisible = true;
     }
   }
+
+
 
   // end of game functions
 
