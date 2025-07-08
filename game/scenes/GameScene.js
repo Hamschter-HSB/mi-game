@@ -244,6 +244,9 @@ class GameScene extends Phaser.Scene {
 
 
         // Scene wechseln
+
+        this.stopPlayerWalkSoundIfPlayed();
+
         this.scene.start('DeliveryCutsceneScene');
 
 
@@ -402,6 +405,9 @@ class GameScene extends Phaser.Scene {
     // F drücken → einsteigen oder aussteigen
     if (Phaser.Input.Keyboard.JustDown(this.fKey)) {
       if (!this.inCar) {
+
+        this.stopPlayerWalkSoundIfPlayed();
+
         const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.car.x, this.car.y);
         if (dist < 100) {
           // Einsteigen
@@ -501,4 +507,13 @@ class GameScene extends Phaser.Scene {
 
     this.updateNPC();
   }
+
+  /**
+   * Deaktiviert den Lauf-Sound eines Spielers
+   */
+  stopPlayerWalkSoundIfPlayed() {
+    if(this.walkSound.isPlaying)
+      this.walkSound.stop();
+  }
+
 }
