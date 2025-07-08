@@ -370,6 +370,9 @@ class GameScene extends Phaser.Scene {
         const logoScale = width / 1920 * 0.9;
         const buttonScale = width / 1920 * 0.4;
 
+        this.logoScale = logoScale;
+        this.buttonScale = buttonScale;
+
         // Logo
         const logo = this.add.image(width / 2, height * 0.2, 'menuOverlay')
           .setOrigin(0.5)
@@ -405,9 +408,9 @@ class GameScene extends Phaser.Scene {
         const [overlay, logo, resumeBtn, exitBtn] = this.menuElements;
 
         overlay.setPosition(width / 2, height / 2).setSize(width, height);
-        logo.setPosition(width / 2, height * 0.2).setScale(width / 1920);
-        resumeBtn.setPosition(width / 2, height * 0.45).setScale(width / 1920);
-        exitBtn.setPosition(width / 2, height * 0.58).setScale(width / 1920);
+        logo.setPosition(width / 2, height * 0.2).setScale(this.logoScale);
+        resumeBtn.setPosition(width / 2, height * 0.45).setScale(this.buttonScale);
+        exitBtn.setPosition(width / 2, height * 0.58).setScale(this.buttonScale);
 
         this.menuElements.forEach(e => e.setVisible(true));
       }
