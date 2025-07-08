@@ -1,25 +1,35 @@
-
 class DeliveryCutsceneScene extends Phaser.Scene {
   constructor() {
     super('DeliveryCutsceneScene');
   }
 
   preload() {
+    this.load.image('BG2', 'assets/img/ui/Background.png'); // Hintergrund laden
     this.load.image('box', 'assets/img/box.png');
     this.load.image('pizza', 'assets/img/pizza.png');
     this.load.image('customer', 'assets/img/player.png');
+    this.load.image('success', 'assets/img/ui/success.png'); // Erfolgsbild
   }
 
   create() {
-    this.add.text(400, 50, 'Übergabe', { fontSize: '32px', color: '#fff' }).setOrigin(0.5);
+    const { width, height } = this.scale;
 
-    // Kunde
+    // === Hintergrund ===
+    const bg = this.add.image(0, 0, 'BG2').setOrigin(0);
+    const texture = this.textures.get('BG2').getSourceImage();
+    const scale = Math.max(width / texture.width, height / texture.height);
+    bg.setScale(scale);
+    bg.setPosition(
+      (width - texture.width * scale) / 2,
+      (height - texture.height * scale) / 2
+    );
+    bg.setAlpha(0.5); // leicht transparent
+
+    // === Szene-Elemente ===
+
     const customer = this.add.sprite(700, 500, 'customer');
-
-    // Box
     const box = this.add.image(400, 500, 'box');
 
-    // Pizza (als Kreis oder Sprite)
     this.pizza = this.add.image(400, 500, 'pizza').setInteractive();
     this.input.setDraggable(this.pizza);
 
@@ -31,45 +41,55 @@ class DeliveryCutsceneScene extends Phaser.Scene {
     this.input.on('dragend', (pointer, gameObject) => {
       const dist = Phaser.Math.Distance.Between(gameObject.x, gameObject.y, customer.x, customer.y);
       if (dist < 100) {
-        // Pizza "übergeben"
+        // Pizza erfolgreich übergeben
         gameObject.destroy();
-        this.add.text(400, 600, 'Pizza übergeben!', { fontSize: '28px', color: '#0f0' }).setOrigin(0.5);
 
-        // Status anpassen — NICHT sofort deliveryIndex++
+        // Erfolgsbild einblenden (zentral)
+        const success = this.add.image(width / 2, height / 2, 'success')
+          .setOrigin(0.5)
+          .setScale(2.0)
+          .setAlpha(0); // zunächst unsichtbar
+
+        this.tweens.add({
+          targets: success,
+          alpha: 1,
+          duration: 300
+        });
+
+        // GameState-Update
         let nextIndex = GameState.deliveryIndex + 1;
 
         if (nextIndex < GameState.deliveryPoints.length) {
-          // Noch weitere Lieferungen im aktuellen Level
           GameState.deliveryIndex = nextIndex;
-          GameState.hasPizza = false; // Muss wieder zur Pizzeria
+          GameState.hasPizza = false;
         } else {
-          // Aktuelles Level fertig
           GameState.currentLevel++;
           const nextLevel = Levels[GameState.currentLevel];
           if (nextLevel) {
             GameState.pickup = nextLevel.pickup;
             GameState.deliveryPoints = nextLevel.deliveries;
             GameState.deliveryIndex = 0;
-            GameState.hasPizza = false; // Muss wieder zur neuen Pizzeria
+            GameState.hasPizza = false;
 
             if (nextLevel.deliveries.length === 1) {
               GameState.hasPizza = false;
             }
           } else {
-            // Kein weiteres Level
             GameState.hasPizza = false;
           }
         }
 
+        // Zurück ins Spiel
         this.time.delayedCall(2000, () => {
           this.scene.start('GameScene');
         });
       } else {
-        // Zurück in die Box
+        // Falsche Position – zurück zur Box
         gameObject.x = 400;
         gameObject.y = 500;
       }
     });
+
     applyBrightness(this);
   }
 }
