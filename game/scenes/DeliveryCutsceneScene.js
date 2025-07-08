@@ -5,7 +5,6 @@ class DeliveryCutsceneScene extends Phaser.Scene {
 
   preload() {
     this.load.image('BG2', 'assets/img/ui/Background.png'); // Hintergrund laden
-    this.load.image('box', 'assets/img/box.png');
     this.load.image('pizza', 'assets/img/pizza.png');
     this.load.image('customer', 'assets/img/player.png');
     this.load.image('success', 'assets/img/ui/success.png'); // Erfolgsbild
@@ -28,7 +27,6 @@ class DeliveryCutsceneScene extends Phaser.Scene {
     // === Szene-Elemente ===
 
     const customer = this.add.sprite(700, 500, 'customer');
-    const box = this.add.image(400, 500, 'box');
 
     this.pizza = this.add.image(400, 500, 'pizza').setInteractive();
     this.input.setDraggable(this.pizza);
