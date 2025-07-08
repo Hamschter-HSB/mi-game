@@ -96,40 +96,41 @@ class MainMenuScene extends Phaser.Scene {
 
     // === SLIDER-Bereich: Lautstärke & Helligkeit ===
 
-    const createSlider = (x, y, height, value, onChange, invert = false) => {
+    const createSlider = (x, y, height, value, onChange) => {
       const track = this.add.rectangle(x, y, 6, height, 0xffffff, 0.3).setOrigin(0.5);
 
-      const thumbY = invert
-        ? y - height / 2 + (1 - value) * height
-        : y - height / 2 + value * height;
+      const valueToY = (v) => y - height / 2 + (1 - v) * height;
+      const yToValue = (dragY) => 1 - ((dragY - (y - height / 2)) / height);
 
-      const thumb = this.add.rectangle(x, thumbY, 16, 16, 0xffffff)
+      const thumb = this.add.rectangle(x, valueToY(value), 16, 16, 0xffffff)
         .setOrigin(0.5)
         .setInteractive({ draggable: true });
 
-      const updateValue = (dragY) => {
-        dragY = Phaser.Math.Clamp(dragY, y - height / 2, y + height / 2);
-        thumb.y = dragY;
+      let lastValidY = thumb.y;
 
-        let percent = (dragY - (y - height / 2)) / height;
-        if (invert) percent = 1 - percent;
+      const updateThumb = (dragY) => {
+        const clampedY = Phaser.Math.Clamp(dragY, y - height / 2, y + height / 2);
+        thumb.y = clampedY;
 
-        onChange(Phaser.Math.Clamp(percent, 0, 1));
+        lastValidY = clampedY;
+
+        const newValue = Phaser.Math.Clamp(yToValue(clampedY), 0, 1);
+        onChange(newValue);
       };
 
       thumb.on('drag', (pointer, dragX, dragY) => {
-        updateValue(dragY);
+        updateThumb(dragY);
       });
 
-      thumb.on('dragend', (pointer, dragX, dragY) => {
-        updateValue(dragY);
+      thumb.on('dragend', () => {
+        updateThumb(lastValidY);
       });
     };
+
 
     const sliderHeight = 100;
     const sliderX = 40;
 
-    // Lautstärke-Slider (unten leise, oben laut)
     createSlider(
       sliderX,
       height - sliderHeight - 40,
@@ -138,11 +139,9 @@ class MainMenuScene extends Phaser.Scene {
       (v) => {
         GameSettings.volume = v;
         this.sound.volume = v;
-      },
-      false // nicht invertiert
+      }
     );
 
-    // Drag-Handling aktivieren
     this.input.setDraggable(this.children.getAll().filter(obj => obj.input && obj.input.draggable));
   }
 }
