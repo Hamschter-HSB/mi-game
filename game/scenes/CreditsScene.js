@@ -19,7 +19,22 @@ class CreditsScene extends Phaser.Scene {
       color: '#aaa'
     }).setOrigin(0.5);
 
-    this.add.text(width / 2, 210, 'Hamschter-HSB Studios', {
+    this.add.text(width / 2, 260, 'Markus Vogel', {
+      fontSize: '20px',
+      color: '#aaa'
+    }).setOrigin(0.5);
+
+    this.add.text(width / 2, 340, 'Ammar Al Mawali', {
+      fontSize: '20px',
+      color: '#aaa'
+    }).setOrigin(0.5);
+
+    this.add.text(width / 2, 420, 'Amir Valibeygi', {
+      fontSize: '20px',
+      color: '#aaa'
+    }).setOrigin(0.5);
+
+    this.add.text(width / 2, 500, 'Hamschter-HSB Studios', {
       fontSize: '20px',
       color: '#aaa'
     }).setOrigin(0.5);
