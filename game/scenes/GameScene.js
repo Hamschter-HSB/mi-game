@@ -7,7 +7,10 @@ class GameScene extends Phaser.Scene {
   preload() {
     this.load.tilemapTiledJSON('pizzamap', 'assets/map/city_map.json');
     this.load.image('tiles', 'assets/img/city_tilemap.png');
-    this.load.image('player', 'assets/img/player.png');
+    this.load.spritesheet('player', 'assets/img/playerss.png', {
+      frameWidth: 16,
+      frameHeight: 16
+    });
     this.load.image('customer', 'assets/img/player.png');
     this.load.image('npc', 'assets/img/npc.jpg');
     this.load.image('car', 'assets/img/car.png');
@@ -19,7 +22,6 @@ class GameScene extends Phaser.Scene {
     this.load.image('pizzyDefault', 'assets/img/ui/pizzy/default-pizzy.png');
     this.load.image('pizzyNewOrder', 'assets/img/ui/pizzy/neworder-pizzy.png');
     this.load.image('pizzyDelivery', 'assets/img/ui/pizzy/delivery-pizzy.png');
-
 
 
     // Optionaler Spieler-Sprite
@@ -37,7 +39,6 @@ class GameScene extends Phaser.Scene {
     this.menuVisible = false;
 
 
-
     // Karte laden
     const map = this.make.tilemap({ key: 'pizzamap' });
     const tileset = map.addTilesetImage('city_tilemap', 'tiles'); // name in Tiled + image key
@@ -47,6 +48,7 @@ class GameScene extends Phaser.Scene {
 
     // Spieler hinzufügen
     this.player = this.physics.add.sprite(768, 768, 'player'); // ← wichtig: physics.add!
+    this.player.setScale(8);
     this.player.setCollideWorldBounds(true);
     this.walkSound = this.sound.add('walkSound', {
       volume: GameSettings.volume,
@@ -68,8 +70,6 @@ class GameScene extends Phaser.Scene {
     // adding collision
     this.physics.add.collider(this.player, ObjectLayer);
     this.physics.add.collider(this.car, ObjectLayer);
-
-
 
     // Kamera folgt Spieler
     this.cameras.main.startFollow(this.player);
@@ -148,6 +148,38 @@ class GameScene extends Phaser.Scene {
       callbackScope: this,
       loop: true
     });
+
+  // Laufe nach unten
+  this.anims.create({
+    key: 'walk-down',
+    frames: this.anims.generateFrameNumbers('player', { frames: [0, 1, 0, 2] }),
+    frameRate: 8,
+    repeat: -1
+  });
+
+  // Laufe nach links
+  this.anims.create({
+    key: 'walk-left',
+    frames: this.anims.generateFrameNumbers('player', { frames: [3, 4, 3, 5] }),
+    frameRate: 8,
+    repeat: -1
+  });
+
+  // Laufe nach rechts
+  this.anims.create({
+    key: 'walk-right',
+    frames: this.anims.generateFrameNumbers('player', { frames: [6, 7, 6, 8] }),
+    frameRate: 8,
+    repeat: -1
+  });
+
+  // Laufe nach oben
+  this.anims.create({
+    key: 'walk-up',
+    frames: this.anims.generateFrameNumbers('player', { frames: [9, 10, 9, 11] }),
+    frameRate: 8,
+    repeat: -1
+  });
 
   }
   // game functions
@@ -430,9 +462,9 @@ class GameScene extends Phaser.Scene {
 
   update(time, delta) {
     if (!this.player || !this.player.body) return;
-
     const playerSpeed = 200;
     const body = this.player.body;
+    const player = this.player
 
     // F drücken → einsteigen oder aussteigen
     if (Phaser.Input.Keyboard.JustDown(this.fKey)) {
@@ -477,12 +509,31 @@ class GameScene extends Phaser.Scene {
       this.walkSound.stop();
 
     if (!this.inCar) {
-      body.setVelocity(0);
 
-      if (this.keys.W.isDown) body.setVelocityY(-playerSpeed);
-      if (this.keys.S.isDown) body.setVelocityY(playerSpeed);
-      if (this.keys.A.isDown) body.setVelocityX(-playerSpeed);
-      if (this.keys.D.isDown) body.setVelocityX(playerSpeed);
+      player.setVelocity(0);
+      if (this.keys.A.isDown) {
+        player.setVelocityX(-playerSpeed);
+        player.anims.play('walk-left', true);
+      } if (this.keys.D.isDown) {
+        player.setVelocityX(playerSpeed);
+        player.anims.play('walk-right', true);
+      }
+
+      if (this.keys.W.isDown) {
+        player.setVelocityY(-playerSpeed);
+        if (!this.keys.A.isDown && !this.keys.D.isDown){
+          player.anims.play('walk-up', true);
+        }
+      } if (this.keys.S.isDown) {
+        player.setVelocityY(playerSpeed);
+        if (!this.keys.A.isDown && !this.keys.D.isDown){
+        player.anims.play('walk-down', true);
+        }
+      } 
+      
+      if (!isWalkingKeyDown){
+        player.anims.stop();
+      }
     } else {
       const carSpeed = 600; // schneller als Spieler
       let targetVX = 0;
