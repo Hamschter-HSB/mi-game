@@ -399,6 +399,10 @@ class GameScene extends Phaser.Scene {
           this.inCar = true;
           this.player.setVisible(false);
           this.cameras.main.startFollow(this.car);
+
+          //Ignition sound
+          this.sound.play('IgnitionSound', { volume: GameSettings.volume });
+
         }
       } else {
         // Aussteigen
