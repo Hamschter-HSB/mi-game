@@ -60,6 +60,11 @@ class GameScene extends Phaser.Scene {
     this.car = this.physics.add.sprite(500, 500, 'car');
     this.car.setCollideWorldBounds(true);
 
+    this.driveSound = this.sound.add('driveSound', {
+      volume: GameSettings.volume,
+      loop: true // Sound soll bei gedrückter Taste durchgehend spielen
+    });
+
     // adding collision
     this.physics.add.collider(this.player, ObjectLayer);
     this.physics.add.collider(this.car, ObjectLayer);
@@ -73,7 +78,7 @@ class GameScene extends Phaser.Scene {
     // Physik-Bereich auf Mapgröße begrenzen
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    // WASD & F
+    // WASD, F & H
     this.keys = this.input.keyboard.addKeys('W,A,S,D');
     this.fKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
     this.hKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H);
@@ -456,6 +461,8 @@ class GameScene extends Phaser.Scene {
         this.cameras.main.startFollow(this.player);
         this.car.setVelocity(0, 0);
         this.carVelocity = { x: 0, y: 0 };
+
+        this.stopCarDriveSoundIfPlayed()
       }
     }
 
@@ -469,11 +476,6 @@ class GameScene extends Phaser.Scene {
     if (!this.inCar && !isWalkingKeyDown && this.walkSound.isPlaying)
       this.walkSound.stop();
 
-    if (Phaser.Input.Keyboard.JustDown(this.hKey)) {
-      if (this.inCar)
-          this.sound.play('hornSound', { volume: GameSettings.volume });
-    }
-
     if (!this.inCar) {
       body.setVelocity(0);
 
@@ -485,6 +487,14 @@ class GameScene extends Phaser.Scene {
       const carSpeed = 600; // schneller als Spieler
       let targetVX = 0;
       let targetVY = 0;
+
+      const isDrivingKeyDown = this.keys.W.isDown || this.keys.A.isDown || this.keys.S.isDown || this.keys.D.isDown;
+
+      if (this.inCar && isDrivingKeyDown && !this.driveSound.isPlaying)
+        this.driveSound.play();
+
+      if (this.inCar && !isDrivingKeyDown && this.driveSound.isPlaying)
+        this.driveSound.stop();
 
       if (this.keys.W.isDown) targetVY = -carSpeed;
       if (this.keys.S.isDown) targetVY = carSpeed;
@@ -500,6 +510,12 @@ class GameScene extends Phaser.Scene {
       if (this.car.body.velocity.length() > 10) {
         this.car.rotation = Phaser.Math.Angle.Between(0, 0, this.carVelocity.x, this.carVelocity.y);
       }
+
+      if (Phaser.Input.Keyboard.JustDown(this.hKey)) {
+        if (this.inCar)
+          this.sound.play('hornSound', { volume: GameSettings.volume });
+      }
+
     }
 
     this.checkObjective();
@@ -552,6 +568,14 @@ class GameScene extends Phaser.Scene {
   stopPlayerWalkSoundIfPlayed() {
     if(this.walkSound.isPlaying)
       this.walkSound.stop();
+  }
+
+  /**
+   * Deaktiviert den Lauf-Sound eines Spielers
+   */
+  stopCarDriveSoundIfPlayed() {
+    if(this.driveSound.isPlaying)
+      this.driveSound.stop();
   }
 
 }
