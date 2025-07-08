@@ -458,6 +458,10 @@ class GameScene extends Phaser.Scene {
       this.carVelocity.y += (targetVY - this.carVelocity.y) * 0.1;
 
       this.car.setVelocity(this.carVelocity.x, this.carVelocity.y);
+
+      if (this.car.body.velocity.length() > 10) {
+        this.car.rotation = Phaser.Math.Angle.Between(0, 0, this.carVelocity.x, this.carVelocity.y);
+      }
     }
 
     this.checkObjective();
