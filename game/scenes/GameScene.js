@@ -5,14 +5,17 @@ class GameScene extends Phaser.Scene {
 
 
   preload() {
-    this.load.tilemapTiledJSON('pizzamap', 'assets/map/city_map.json');
-    this.load.image('tiles', 'assets/img/city_tilemap.png');
-    this.load.spritesheet('player', 'assets/img/playerss.png', {
+    this.load.tilemapTiledJSON('pizzamap', 'assets/map/map1.json');
+    this.load.image('tiles', 'assets/img/Tileset0001.png');
+    this.load.spritesheet('player', 'assets/img/player.png', {
       frameWidth: 16,
       frameHeight: 16
     });
-    this.load.image('customer', 'assets/img/player.png');
-    this.load.image('npc', 'assets/img/npc.jpg');
+    this.load.spritesheet('npc', 'assets/img/npc.png', {
+      frameWidth: 16,
+      frameHeight: 16
+    });
+    this.load.image('customer', 'assets/img/customer.png');
     this.load.image('car', 'assets/img/car.png');
 
     this.load.image('menuOverlay', 'assets/img/Logo.png');
@@ -26,8 +29,9 @@ class GameScene extends Phaser.Scene {
 
     // Optionaler Spieler-Sprite
   }
-
+  
   create() {
+    const scaleFactor = 8;
     window.currentScene = this; // for debug
     this.scene.get('MusicManagerScene').stopMusic();
     this.sound.volume = GameSettings.volume;
@@ -41,14 +45,16 @@ class GameScene extends Phaser.Scene {
 
     // Karte laden
     const map = this.make.tilemap({ key: 'pizzamap' });
-    const tileset = map.addTilesetImage('city_tilemap', 'tiles'); // name in Tiled + image key
+    const tileset = map.addTilesetImage('Tileset0001', 'tiles'); // name in Tiled + image key
     const groundLayer = map.createLayer('Ground', tileset, 0, 0); // Layername wie in Tiled
+    groundLayer.setScale(scaleFactor);
     const ObjectLayer = map.createLayer('Objects', tileset, 0, 0); // Layername wie in Tiled
+    ObjectLayer.setScale(scaleFactor);
     ObjectLayer.setCollisionByExclusion([-1]);
 
     // Spieler hinzufügen
     this.player = this.physics.add.sprite(768, 768, 'player'); // ← wichtig: physics.add!
-    this.player.setScale(8);
+    this.player.setScale(scaleFactor);
     this.player.setCollideWorldBounds(true);
     this.walkSound = this.sound.add('walkSound', {
       volume: GameSettings.volume,
@@ -73,10 +79,10 @@ class GameScene extends Phaser.Scene {
 
     // Kamera folgt Spieler
     this.cameras.main.startFollow(this.player);
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.cameras.main.setBounds(0, 0, map.widthInPixels*scaleFactor, map.heightInPixels*scaleFactor);
 
     // Physik-Bereich auf Mapgröße begrenzen
-    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.physics.world.setBounds(0, 0, map.widthInPixels*scaleFactor, map.heightInPixels*scaleFactor);
 
     // WASD, F, H & SPACE
     this.keys = this.input.keyboard.addKeys('W,A,S,D');
@@ -126,6 +132,7 @@ class GameScene extends Phaser.Scene {
 
     for (let i = 0; i < amountOfNPCS; i++) {
       const npc = this.physics.add.sprite(100, 100, 'npc');
+      npc.setScale(scaleFactor);
       npc.setCollideWorldBounds(true); // bleibt im Weltbereich
 
       // Richtungswerte speichern
@@ -144,13 +151,14 @@ class GameScene extends Phaser.Scene {
 
     // Alle paar Sekunden Richtung ändern
     this.time.addEvent({
+      
       delay: 2000,
       callback: this.changeDirection,
       callbackScope: this,
       loop: true
     });
 
-  // Laufe nach unten
+  // Animation: Spieler läuft nach unten
   this.anims.create({
     key: 'walk-down',
     frames: this.anims.generateFrameNumbers('player', { frames: [0, 1, 0, 2] }),
@@ -158,7 +166,7 @@ class GameScene extends Phaser.Scene {
     repeat: -1
   });
 
-  // Laufe nach links
+  // Animation: Spieler läuft nach links
   this.anims.create({
     key: 'walk-left',
     frames: this.anims.generateFrameNumbers('player', { frames: [3, 4, 3, 5] }),
@@ -166,7 +174,7 @@ class GameScene extends Phaser.Scene {
     repeat: -1
   });
 
-  // Laufe nach rechts
+  // Animation: Spieler läuft nach rechts
   this.anims.create({
     key: 'walk-right',
     frames: this.anims.generateFrameNumbers('player', { frames: [6, 7, 6, 8] }),
@@ -174,10 +182,42 @@ class GameScene extends Phaser.Scene {
     repeat: -1
   });
 
-  // Laufe nach oben
+  // Animation: Spieler läuft nach oben
   this.anims.create({
     key: 'walk-up',
     frames: this.anims.generateFrameNumbers('player', { frames: [9, 10, 9, 11] }),
+    frameRate: 8,
+    repeat: -1
+  });
+
+  // Animation: NPC läuft nach unten
+  this.anims.create({
+    key: 'npc-walk-down',
+    frames: this.anims.generateFrameNumbers('npc', { frames: [0, 1, 0, 2] }),
+    frameRate: 8,
+    repeat: -1
+  });
+
+  // Animation: NPC läuft nach links
+  this.anims.create({
+    key: 'npc-walk-left',
+    frames: this.anims.generateFrameNumbers('npc', { frames: [3, 4, 3, 5] }),
+    frameRate: 8,
+    repeat: -1
+  });
+
+  // Animation: NPC läuft nach rechts
+  this.anims.create({
+    key: 'npc-walk-right',
+    frames: this.anims.generateFrameNumbers('npc', { frames: [6, 7, 6, 8] }),
+    frameRate: 8,
+    repeat: -1
+  });
+
+  // Animation: NPC läuft nach oben
+  this.anims.create({
+    key: 'npc-walk-up',
+    frames: this.anims.generateFrameNumbers('npc', { frames: [9, 10, 9, 11] }),
     frameRate: 8,
     repeat: -1
   });
@@ -247,9 +287,22 @@ class GameScene extends Phaser.Scene {
     ];
 
     this.npcs.children.iterate(npc => {
+      npc.anims.stop();
       const dir = Phaser.Math.RND.pick(directions);
       npc.dx = dir.dx;
       npc.dy = dir.dy;
+      if (npc.dx > 0){
+        npc.anims.play('npc-walk-right', true);
+      }
+      if (npc.dx < 0){
+        npc.anims.play('npc-walk-left', true);
+      }
+      if (npc.dy > 0){
+        npc.anims.play('npc-walk-down', true);
+      }
+      if (npc.dy < 0){
+        npc.anims.play('npc-walk-up', true);
+      }
     });
   }
 
@@ -366,6 +419,7 @@ class GameScene extends Phaser.Scene {
     }
 
     this.customerSprite = this.add.sprite(x, y, 'customer').setDepth(150);
+    this.customerSprite.setScale(8);
   }
 
   teleportPlayer(x, y) {
