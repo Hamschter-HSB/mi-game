@@ -16,6 +16,11 @@ class GameScene extends Phaser.Scene {
     this.load.image('resumeBtn', 'assets/img/ui/Resume.png');
     this.load.image('exitBtn', 'assets/img/ui/Exit.png');
 
+    this.load.image('pizzyDefault', 'assets/img/ui/pizzy/default-pizzy.png');
+    this.load.image('pizzyNewOrder', 'assets/img/ui/pizzy/neworder-pizzy.png');
+    this.load.image('pizzyDelivery', 'assets/img/ui/pizzy/delivery-pizzy.png');
+
+
 
     // Optionaler Spieler-Sprite
   }
@@ -75,12 +80,15 @@ class GameScene extends Phaser.Scene {
 
     applyBrightness(this);
 
-    this.instructionText = this.add.text(20, 20, '', {
-      fontSize: '28px',
-      color: '#fff',
-      backgroundColor: 'rgba(0,0,0,0.7)',
-      padding: { x: 10, y: 5 }
-    }).setScrollFactor(0);
+    const pizzyWidth = this.scale.width;
+    const pizzyHeight = this.scale.height;
+
+    this.pizzyAssistant = this.add.image(pizzyWidth - 100, pizzyHeight - 100, 'pizzyDefault')
+      .setOrigin(1, 1)
+      .setScrollFactor(0)
+      .setDepth(9998)
+      .setScale(this.scale.width / 1920 * 0.5); // skalierbar je nach Auflösung
+
 
 
     // Waypoints
@@ -164,7 +172,7 @@ class GameScene extends Phaser.Scene {
     // Level-Setup
     const level = Levels[GameState.currentLevel];
     if (!level) {
-      this.showInstruction('Alle Lieferungen abgeschlossen!');
+      this.updatePizzy('default');
       return;
     }
 
@@ -172,12 +180,12 @@ class GameScene extends Phaser.Scene {
     GameState.deliveryPoints = level.deliveries;
 
     if (!GameState.hasPizza) {
-      this.showInstruction('Fahre zur Pizzeria, um Pizza abzuholen!');
+      this.updatePizzy('pickup');
       this.createWaypoints(this.player.x, this.player.y, GameState.pickup.x, GameState.pickup.y);
     } else {
       const delivery = GameState.deliveryPoints[GameState.deliveryIndex];
       if (delivery) {
-        this.showInstruction('Fahre zur Lieferadresse!');
+        this.updatePizzy('delivery');
         this.createWaypoints(this.player.x, this.player.y, delivery.x, delivery.y);
         this.spawnCustomer(delivery.x, delivery.y);
       }
@@ -207,11 +215,23 @@ class GameScene extends Phaser.Scene {
     });
   }
 
-  showInstruction(text) {
-    if (this.instructionText) {
-      this.instructionText.setText(text);
+  updatePizzy(mode = 'default') {
+    if (!this.pizzyAssistant) return;
+
+    let key = 'pizzyDefault';
+
+    switch (mode) {
+      case 'pickup':
+        key = 'pizzyNewOrder';
+        break;
+      case 'delivery':
+        key = 'pizzyDelivery';
+        break;
     }
+
+    this.pizzyAssistant.setTexture(key);
   }
+
   checkObjective() {
     const px = this.player.x;
     const py = this.player.y;
@@ -219,7 +239,9 @@ class GameScene extends Phaser.Scene {
     if (!GameState.hasPizza) {
       if (Phaser.Math.Distance.Between(px, py, GameState.pickup.x, GameState.pickup.y) < 100) {
         GameState.hasPizza = true;
-        this.showInstruction('Pizza abgeholt! Fahre zur Lieferadresse.');
+        GameState.pizzyStatus = 'delivery';
+        this.updatePizzy('delivery');
+
 
         const delivery = GameState.deliveryPoints[GameState.deliveryIndex];
         if (delivery) {
@@ -249,16 +271,17 @@ class GameScene extends Phaser.Scene {
 
         this.scene.start('DeliveryCutsceneScene');
 
+        GameState.pizzyStatus = 'default';
+        this.updatePizzy('default');
 
-        this.showInstruction('Pizza wurde abgeliefert!');
         GameState.deliveryIndex++;
 
-        this.time.delayedCall(3000, () => {
+        this.time.delayedCall(1000, () => {
           if (GameState.deliveryIndex >= GameState.deliveryPoints.length) {
             GameState.currentLevel++;
             this.setupLevel();
           } else {
-            this.showInstruction('Fahre zurück zur Pizzeria für die nächste Pizza.');
+            this.updatePizzy('pickup');
             GameState.hasPizza = false;
 
             // Jetzt auch beim Zurückfahren Wegpunkte anzeigen
@@ -267,6 +290,7 @@ class GameScene extends Phaser.Scene {
         });
       }
     }
+    this.updatePizzy(GameState.pizzyStatus || 'default');
   }
 
   createWaypoints(startX, startY, endX, endY) {
@@ -504,6 +528,17 @@ class GameScene extends Phaser.Scene {
         }
       }
     }
+
+    this.scale.on('resize', (gameSize) => {
+      const width = gameSize.width;
+      const height = gameSize.height;
+
+      if (this.pizzyAssistant) {
+        this.pizzyAssistant.setPosition(width - 100, height - 100);
+        this.pizzyAssistant.setScale(width / 1920 * 0.5);
+      }
+    });
+
 
     this.updateNPC();
   }
