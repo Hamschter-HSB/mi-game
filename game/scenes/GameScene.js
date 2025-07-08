@@ -78,10 +78,11 @@ class GameScene extends Phaser.Scene {
     // Physik-Bereich auf Mapgröße begrenzen
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    // WASD, F & H
+    // WASD, F, H & SPACE
     this.keys = this.input.keyboard.addKeys('W,A,S,D');
     this.fKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
     this.hKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H);
+    this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     applyBrightness(this);
 
@@ -536,6 +537,7 @@ class GameScene extends Phaser.Scene {
       }
     } else {
       const carSpeed = 600; // schneller als Spieler
+      this.carSpeedBoost = 1; //Boost-Multiply, wenn "SPACE"-Taste gedrückt wird
       let targetVX = 0;
       let targetVY = 0;
 
@@ -547,10 +549,21 @@ class GameScene extends Phaser.Scene {
       if (this.inCar && !isDrivingKeyDown && this.driveSound.isPlaying)
         this.driveSound.stop();
 
-      if (this.keys.W.isDown) targetVY = -carSpeed;
-      if (this.keys.S.isDown) targetVY = carSpeed;
-      if (this.keys.A.isDown) targetVX = -carSpeed;
-      if (this.keys.D.isDown) targetVX = carSpeed;
+      // Manage car speed
+
+      // Car-Booost
+      if (this.spaceKey.isDown && isDrivingKeyDown) {
+          this.carSpeedBoost = 1.8
+      }
+      if(!this.spaceKey.isDown && isDrivingKeyDown) {
+        this.carSpeedBoost = 1
+      }
+
+      // Set car direction
+      if (this.keys.W.isDown) targetVY = -carSpeed * this.carSpeedBoost;
+      if (this.keys.S.isDown) targetVY = carSpeed * this.carSpeedBoost;
+      if (this.keys.A.isDown) targetVX = -carSpeed * this.carSpeedBoost;
+      if (this.keys.D.isDown) targetVX = carSpeed * this.carSpeedBoost;
 
       // „Nachschieben“ (einfache Trägheit)
       this.carVelocity.x += (targetVX - this.carVelocity.x) * 0.1;
