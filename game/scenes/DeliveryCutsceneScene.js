@@ -39,7 +39,7 @@ class DeliveryCutsceneScene extends Phaser.Scene {
 
     this.pizza = this.add.image(pizzaStartX, pizzaStartY, 'pizza')
       .setInteractive()
-      .setScale(4.0)
+      .setScale(3.0)
       .setDepth(11);
 
     this.input.setDraggable(this.pizza);
