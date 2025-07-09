@@ -832,6 +832,9 @@ class GameScene extends Phaser.Scene {
 
             // TODO open Game-Over screen and reset game
             console.log("GAME OVER");
+            this.scene.get('MusicManagerScene').stopMusic();
+            this.sound.play('gameoverSound', {volume: GameSettings.volume});
+            this.scene.start('GameoverScene');
         }
     }
 

@@ -34,9 +34,6 @@ class SettingsScene extends Phaser.Scene {
     const scaleBase = 1920; // FullHD als Referenz
     const scaleFactor = width / scaleBase;
 
-    this.sound.volume = GameSettings.volume;
-    this.scene.get('MusicManagerScene').playMusic(this);
-
     const centerX = width / 2;
     const startY = height * 0.3;
 
