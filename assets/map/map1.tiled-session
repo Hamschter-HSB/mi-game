@@ -16,8 +16,8 @@
             "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 512.25,
-                "y": 511.75
+                "x": 261,
+                "y": 351.5
             }
         },
         "C:/Users/marku/Desktop/city.tmx#Tileset0001": {
@@ -29,14 +29,25 @@
             "scaleInEditor": 1
         },
         "city_map.json": {
-            "scale": 0.25,
+            "scale": 0.0625,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 4096,
-                "y": 4098
+                "x": 3184,
+                "y": 4688
             }
         },
         "city_map.json#city_tilemap": {
+            "scaleInDock": 1
+        },
+        "map1.json": {
+            "scale": 0.8275390625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 592.1170639603492,
+                "y": 512.3625206514043
+            }
+        },
+        "map1.json#tileset_map1": {
             "scaleInDock": 1
         }
     },
@@ -55,6 +66,7 @@
     "project": "map1.tiled-project",
     "recentFiles": [
         "city_map.json",
+        "map1.json",
         "C:/Users/marku/Desktop/city.tmx"
     ],
     "tileset.embedInMap": true,

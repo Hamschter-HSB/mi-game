@@ -52,8 +52,14 @@ class GameScene extends Phaser.Scene {
         // Karte laden
         const map = this.make.tilemap({key: 'pizzamap'});
         const tileset = map.addTilesetImage('tileset_map1', 'tiles'); // name in Tiled + image key
+        
+        const ornamentLayer = map.createLayer('Ornaments', tileset, 0, 0); // Layername wie in Tiled
+        ornamentLayer.setScale(scaleFactor);
+        ornamentLayer.setDepth(1);
+
         const groundLayer = map.createLayer('Ground', tileset, 0, 0); // Layername wie in Tiled
         groundLayer.setScale(scaleFactor);
+
         const ObjectLayer = map.createLayer('Objects', tileset, 0, 0); // Layername wie in Tiled
         ObjectLayer.setScale(scaleFactor);
         ObjectLayer.setCollisionByExclusion([-1]);
@@ -62,6 +68,7 @@ class GameScene extends Phaser.Scene {
         this.player = this.physics.add.sprite(1230, 1152, 'player'); // ← wichtig: physics.add!
         this.player.setScale(scaleFactor);
         this.player.setCollideWorldBounds(true);
+        this.player.setDepth(15);
         this.walkSound = this.sound.add('walkSound', {
             volume: GameSettings.volume,
             loop: true // Sound soll bei gedrückter Taste durchgehend spielen
@@ -76,6 +83,7 @@ class GameScene extends Phaser.Scene {
 
         this.car = this.physics.add.sprite(840, 830, 'car');
         this.car.setCollideWorldBounds(true);
+        this.car.setDepth(16);
 
         this.driveSound = this.sound.add('driveSound', {
             volume: GameSettings.volume,
@@ -169,6 +177,7 @@ class GameScene extends Phaser.Scene {
         for (let i = 0; i < amountOfNPCS; i++) {
             const npc = this.physics.add.sprite(1152 + 128 * i, 896 + 128 * i, 'npc');
             npc.setScale(scaleFactor);
+            npc.setDepth(15);
             npc.setCollideWorldBounds(true); // bleibt im Weltbereich
 
             // Richtungswerte speichern
