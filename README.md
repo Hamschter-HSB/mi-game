@@ -35,9 +35,11 @@ HSB
 Clicksound - https://pixabay.com/sound-effects/click-buttons-ui-menu-sounds-effects-button-7-203601/
 Walksound - https://pixabay.com/de/sound-effects/walking-sound-effect-272246/
 DriveSound - https://pixabay.com/de/sound-effects/tractor-engine-27641/
+NitroReadySound - https://pixabay.com/de/sound-effects/steampunk-mechanical-gadget-188052/
 NitroSound - https://pixabay.com/de/sound-effects/nitro-activation-48077/
 Hornsound - https://pixabay.com/de/sound-effects/car-horn-beep-beep-two-beeps-honk-honk-6188/
 Ignitionsound - https://pixabay.com/sound-effects/car-engine-ignition-fail-352768/
+ItemDropSound - https://pixabay.com/de/sound-effects/canvas-dropcloth-snap-1-98862/
 ItemPickupSound - https://pixabay.com/de/sound-effects/item-pickup-37089/
 MenuMusic: - https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=321645
 ActionMusic: https://pixabay.com/de/music/volk-giuseppes-dreams-classical-napoli-waltz-330438/

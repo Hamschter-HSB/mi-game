@@ -3,7 +3,6 @@ class GameScene extends Phaser.Scene {
         super('GameScene');
     }
 
-
     preload() {
         this.load.tilemapTiledJSON('pizzamap', 'assets/map/map1.json');
         this.load.image('tiles', 'assets/img/tileset_map1.png');
@@ -19,8 +18,6 @@ class GameScene extends Phaser.Scene {
         this.load.image('car', 'assets/img/car.png');
 
         this.load.image('menuOverlay', 'assets/img/Logo.png');
-        this.load.image('resumeBtn', 'assets/img/ui/Resume.png');
-        this.load.image('exitBtn', 'assets/img/ui/Exit.png');
         this.load.image('menuBtn', 'assets/img/ui/Menu.png');
 
         this.load.image('pizzyDefault', 'assets/img/ui/pizzy/default-pizzy.png');
@@ -36,6 +33,31 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
+
+        console.log("Scene wurde gestartet!");
+
+        this.timerText = this.add.text(20, 170, `Zeit: ${GameState.minutes >= 10 ? GameState.minutes : '0'+GameState.minutes}:${GameState.seconds >= 10 ? GameState.seconds : '0'+GameState.seconds}`, {
+            fontSize: '100px',
+            fontFamily: 'Roboto',
+            fontStyle: 'bold',
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 6
+        }).setOrigin(0, 0)
+            .setScrollFactor(0)
+            .setDepth(9999)
+            .setScale(this.scale.width / 1920 * 0.3);
+
+        this.timerText.setDepth(1000);
+
+        // Timer jede Sekunde aufrufen
+        this.time.addEvent({
+            delay: 1000,        // 1000 ms = 1 Sekunde
+            callback: this.updateGameTimer,
+            callbackScope: this,
+            loop: true
+        });
+
         const scaleFactor = 8;
         window.currentScene = this; // for debug
         this.sound.volume = GameSettings.volume;
@@ -52,7 +74,7 @@ class GameScene extends Phaser.Scene {
         // Karte laden
         const map = this.make.tilemap({key: 'pizzamap'});
         const tileset = map.addTilesetImage('tileset_map1', 'tiles'); // name in Tiled + image key
-        
+
         const ornamentLayer = map.createLayer('Ornaments', tileset, 0, 0); // Layername wie in Tiled
         ornamentLayer.setScale(scaleFactor);
         ornamentLayer.setDepth(1);
@@ -524,81 +546,11 @@ class GameScene extends Phaser.Scene {
         }
     }
 
-
     toggleMenu() {
-        const width = this.scale.width;
-        const height = this.scale.height;
-
-        if (this.menuVisible) {
-            this.menuElements.forEach(e => e.setVisible(false));
-            this.menuVisible = false;
-        } else {
-            if (!this.menuElements) {
-                this.menuElements = [];
-
-                // Overlay
-                const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6)
-                    .setScrollFactor(0)
-                    .setDepth(9999);
-                this.menuElements.push(overlay);
-
-                // Dynamische Skalierung
-                const logoScale = width / 1920 * 0.9;
-                const buttonScale = width / 1920 * 0.4;
-
-                this.logoScale = logoScale;
-                this.buttonScale = buttonScale;
-
-                // Logo
-                const logo = this.add.image(width / 2, height * 0.2, 'menuOverlay')
-                    .setOrigin(0.5)
-                    .setScale(logoScale)
-                    .setScrollFactor(0)
-                    .setDepth(10000);
-                this.menuElements.push(logo);
-
-                // Resume Button
-                const resumeBtn = this.add.image(width / 2, height * 0.45, 'resumeBtn')
-                    .setOrigin(0.5)
-                    .setScale(buttonScale)
-                    .setScrollFactor(0)
-                    .setDepth(10000)
-                    .setInteractive()
-                    .on('pointerdown', () => {
-                        this.sound.play('clickSound', {volume: GameSettings.volume});
-                        this.toggleMenu()
-                    });
-                this.menuElements.push(resumeBtn);
-
-                // Exit Button
-                const exitBtn = this.add.image(width / 2, height * 0.58, 'exitBtn')
-                    .setOrigin(0.5)
-                    .setScale(buttonScale)
-                    .setScrollFactor(0)
-                    .setDepth(10000)
-                    .setInteractive()
-                    .on('pointerdown', () => {
-                        this.scene.get('MusicManagerScene').stopMusic();
-                        this.sound.play('clickSound', {volume: GameSettings.volume});
-                        this.scene.start('MainMenuScene');
-                    });
-                this.menuElements.push(exitBtn);
-            } else {
-                // Falls bereits erstellt → nur neu positionieren & anzeigen
-                const [overlay, logo, resumeBtn, exitBtn] = this.menuElements;
-
-                overlay.setPosition(width / 2, height / 2).setSize(width, height);
-                logo.setPosition(width / 2, height * 0.2).setScale(this.logoScale);
-                resumeBtn.setPosition(width / 2, height * 0.45).setScale(this.buttonScale);
-                exitBtn.setPosition(width / 2, height * 0.58).setScale(this.buttonScale);
-
-                this.menuElements.forEach(e => e.setVisible(true));
-            }
-
-            this.menuVisible = true;
-        }
+        this.scene.launch('PauseMenuScene', {pausedSceneKey: this.scene.key});
+        this.scene.bringToTop('PauseMenuScene');
+        this.scene.pause();
     }
-
 
     // end of game functions
 
@@ -818,6 +770,7 @@ class GameScene extends Phaser.Scene {
         // Setze einen Timer, der nach 3 Sekunden wieder deaktiviert
         this.time.delayedCall(6000, () => {
             this.isBoostLocked = false;
+            this.sound.play('nitroReadySound', {volume: GameSettings.volume});
             console.log('Boost unlocked!');
         }, [], this);
     }
@@ -840,7 +793,6 @@ class GameScene extends Phaser.Scene {
             // Timer stoppen, wenn 0 erreicht ist
             this.timeEvent.remove();
 
-            // TODO open Game-Over screen and reset game
             console.log("GAME OVER");
             this.scene.get('MusicManagerScene').stopMusic();
             this.sound.play('gameoverSound', {volume: GameSettings.volume});
@@ -849,4 +801,19 @@ class GameScene extends Phaser.Scene {
         }
     }
 
+    updateGameTimer() {
+        GameState.seconds++;
+
+        if (GameState.seconds >= 60) {
+            GameState.seconds = 0;
+            GameState.minutes++;
+        }
+
+        // Anzeige aktualisieren
+        const minStr = GameState.minutes.toString().padStart(2, '0');
+        const secStr = GameState.seconds.toString().padStart(2, '0');
+
+        this.timerText.setText(`Zeit: ${minStr}:${secStr}`);
     }
+
+}

@@ -8,6 +8,9 @@ class GameoverScene extends Phaser.Scene {
   }
 
   create() {
+
+    this.sound.stopAll();
+
     const { width, height } = this.scale;
 
     this.sound.volume = GameSettings.volume;
