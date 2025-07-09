@@ -661,9 +661,6 @@ class GameScene extends Phaser.Scene {
       if (this.spaceKey.isDown && isDrivingKeyDown) {
           this.activateCarBoost();
       }
-      // if(!this.spaceKey.isDown && isDrivingKeyDown) {
-      //   this.carSpeedBoost = 1
-      // }
 
       // Set car direction
       if (this.keys.W.isDown) targetVY = -carSpeed * this.carSpeedBoost;
@@ -738,11 +735,11 @@ class GameScene extends Phaser.Scene {
   }
 
     activateCarBoost() {
-      if (this.isBoostLocked) return;
+      if (this.isBoostLocked) return; // Locked heißt 6 sec noch nicht um
 
       this.lockCarBoost();
 
-      if (this.isBoostActive) return;
+      if (this.isBoostActive) return; // Verhindere mehrfaches Aktivieren
 
       this.isBoostActive = true;
       this.carSpeedBoost = 1.8;
