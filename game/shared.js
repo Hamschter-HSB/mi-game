@@ -26,7 +26,7 @@ const Levels = {
   2: {
     pickup: {x: 1215, y: 967},
     deliveries: [
-      {x: 2195, y: 315},
+      {x: 2112, y: 64},
       {x: 2879, y: 980}
     ]
   },
