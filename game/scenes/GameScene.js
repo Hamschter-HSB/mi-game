@@ -742,6 +742,7 @@ class GameScene extends Phaser.Scene {
 
         this.isBoostActive = true;
         this.carSpeedBoost = 1.8;
+        this.sound.play('nitroSound', { volume: GameSettings.volume });
         console.log('Boost aktiviert!');
 
         this.time.delayedCall(3000, () => {
