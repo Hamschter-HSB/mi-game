@@ -19,8 +19,6 @@ class GameScene extends Phaser.Scene {
         this.load.image('car', 'assets/img/car.png');
 
         this.load.image('menuOverlay', 'assets/img/Logo.png');
-        this.load.image('resumeBtn', 'assets/img/ui/Resume.png');
-        this.load.image('exitBtn', 'assets/img/ui/Exit.png');
         this.load.image('menuBtn', 'assets/img/ui/Menu.png');
 
         this.load.image('pizzyDefault', 'assets/img/ui/pizzy/default-pizzy.png');
@@ -524,81 +522,11 @@ class GameScene extends Phaser.Scene {
         }
     }
 
-
     toggleMenu() {
-        const width = this.scale.width;
-        const height = this.scale.height;
-
-        if (this.menuVisible) {
-            this.menuElements.forEach(e => e.setVisible(false));
-            this.menuVisible = false;
-        } else {
-            if (!this.menuElements) {
-                this.menuElements = [];
-
-                // Overlay
-                const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6)
-                    .setScrollFactor(0)
-                    .setDepth(9999);
-                this.menuElements.push(overlay);
-
-                // Dynamische Skalierung
-                const logoScale = width / 1920 * 0.9;
-                const buttonScale = width / 1920 * 0.4;
-
-                this.logoScale = logoScale;
-                this.buttonScale = buttonScale;
-
-                // Logo
-                const logo = this.add.image(width / 2, height * 0.2, 'menuOverlay')
-                    .setOrigin(0.5)
-                    .setScale(logoScale)
-                    .setScrollFactor(0)
-                    .setDepth(10000);
-                this.menuElements.push(logo);
-
-                // Resume Button
-                const resumeBtn = this.add.image(width / 2, height * 0.45, 'resumeBtn')
-                    .setOrigin(0.5)
-                    .setScale(buttonScale)
-                    .setScrollFactor(0)
-                    .setDepth(10000)
-                    .setInteractive()
-                    .on('pointerdown', () => {
-                        this.sound.play('clickSound', {volume: GameSettings.volume});
-                        this.toggleMenu()
-                    });
-                this.menuElements.push(resumeBtn);
-
-                // Exit Button
-                const exitBtn = this.add.image(width / 2, height * 0.58, 'exitBtn')
-                    .setOrigin(0.5)
-                    .setScale(buttonScale)
-                    .setScrollFactor(0)
-                    .setDepth(10000)
-                    .setInteractive()
-                    .on('pointerdown', () => {
-                        this.scene.get('MusicManagerScene').stopMusic();
-                        this.sound.play('clickSound', {volume: GameSettings.volume});
-                        this.scene.start('MainMenuScene');
-                    });
-                this.menuElements.push(exitBtn);
-            } else {
-                // Falls bereits erstellt → nur neu positionieren & anzeigen
-                const [overlay, logo, resumeBtn, exitBtn] = this.menuElements;
-
-                overlay.setPosition(width / 2, height / 2).setSize(width, height);
-                logo.setPosition(width / 2, height * 0.2).setScale(this.logoScale);
-                resumeBtn.setPosition(width / 2, height * 0.45).setScale(this.buttonScale);
-                exitBtn.setPosition(width / 2, height * 0.58).setScale(this.buttonScale);
-
-                this.menuElements.forEach(e => e.setVisible(true));
-            }
-
-            this.menuVisible = true;
-        }
+        this.scene.launch('PauseMenuScene', {pausedSceneKey: this.scene.key});
+        this.scene.bringToTop('PauseMenuScene');
+        this.scene.pause();
     }
-
 
     // end of game functions
 
