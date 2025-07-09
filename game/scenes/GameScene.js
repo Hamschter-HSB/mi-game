@@ -76,6 +76,9 @@ class GameScene extends Phaser.Scene {
     // adding collision
     this.physics.add.collider(this.player, ObjectLayer);
     this.physics.add.collider(this.car, ObjectLayer);
+    this.physics.add.collider(this.player, this.npcs, (player, npc) => {
+      console.log('Spieler kollidiert mit NPC!');
+    });
 
     // Kamera folgt Spieler
     this.cameras.main.startFollow(this.player);
@@ -127,11 +130,11 @@ class GameScene extends Phaser.Scene {
     });
 
     // NPC's erstellen und hinzufügen
-    this.npcs = this.add.group();
-    const amountOfNPCS = 4
+    this.npcs = this.physics.add.group();
+    const amountOfNPCS = 20;
 
     for (let i = 0; i < amountOfNPCS; i++) {
-      const npc = this.physics.add.sprite(2200 + 100*i, 1200 + 100*i, 'npc');
+      const npc = this.physics.add.sprite(1152 + 128*i, 896 + 128*i, 'npc');
       npc.setScale(scaleFactor);
       npc.setCollideWorldBounds(true); // bleibt im Weltbereich
 
@@ -274,6 +277,7 @@ class GameScene extends Phaser.Scene {
     this.npcs.children.iterate(npc => {
       this.npcSpeed = 25;
       npc.setVelocity(npc.dx * this.npcSpeed, npc.dy * this.npcSpeed);
+      npc.setImmovable(true); //kollision mit spieler: NPCs können nicht verschoben werden
     });
   }
 
