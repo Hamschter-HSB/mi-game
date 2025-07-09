@@ -1,7 +1,7 @@
 const GameSettings = {
   volume: 0.3,
   brightness: 1,
-  experimental: true
+  experimental: false
 };
 
 const GameState = {
