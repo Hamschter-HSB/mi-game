@@ -6,7 +6,7 @@ class GameScene extends Phaser.Scene {
 
   preload() {
     this.load.tilemapTiledJSON('pizzamap', 'assets/map/map1.json');
-    this.load.image('tiles', 'assets/img/Tileset0001.png');
+    this.load.image('tiles', 'assets/img/tileset_map1.png');
     this.load.spritesheet('player', 'assets/img/player.png', {
       frameWidth: 16,
       frameHeight: 16
@@ -45,7 +45,7 @@ class GameScene extends Phaser.Scene {
 
     // Karte laden
     const map = this.make.tilemap({ key: 'pizzamap' });
-    const tileset = map.addTilesetImage('Tileset0001', 'tiles'); // name in Tiled + image key
+    const tileset = map.addTilesetImage('tileset_map1', 'tiles'); // name in Tiled + image key
     const groundLayer = map.createLayer('Ground', tileset, 0, 0); // Layername wie in Tiled
     groundLayer.setScale(scaleFactor);
     const ObjectLayer = map.createLayer('Objects', tileset, 0, 0); // Layername wie in Tiled
@@ -53,7 +53,7 @@ class GameScene extends Phaser.Scene {
     ObjectLayer.setCollisionByExclusion([-1]);
 
     // Spieler hinzufügen
-    this.player = this.physics.add.sprite(768, 768, 'player'); // ← wichtig: physics.add!
+    this.player = this.physics.add.sprite(1230, 1152, 'player'); // ← wichtig: physics.add!
     this.player.setScale(scaleFactor);
     this.player.setCollideWorldBounds(true);
     this.walkSound = this.sound.add('walkSound', {
@@ -65,7 +65,7 @@ class GameScene extends Phaser.Scene {
     this.inCar = false;
     this.carVelocity = { x: 0, y: 0 }; // Für „Nachschieben“
 
-    this.car = this.physics.add.sprite(500, 500, 'car');
+    this.car = this.physics.add.sprite(840, 830, 'car');
     this.car.setCollideWorldBounds(true);
 
     this.driveSound = this.sound.add('driveSound', {
@@ -131,7 +131,7 @@ class GameScene extends Phaser.Scene {
     const amountOfNPCS = 4
 
     for (let i = 0; i < amountOfNPCS; i++) {
-      const npc = this.physics.add.sprite(100, 100, 'npc');
+      const npc = this.physics.add.sprite(2200 + 100*i, 1200 + 100*i, 'npc');
       npc.setScale(scaleFactor);
       npc.setCollideWorldBounds(true); // bleibt im Weltbereich
 

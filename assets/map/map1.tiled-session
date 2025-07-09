@@ -12,22 +12,27 @@
             "scaleInDock": 4
         },
         "C:/Users/marku/Desktop/city.tmx": {
-            "scale": 4,
+            "scale": 5.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 214.5,
-                "y": 250.5
+                "x": 85.27272727272728,
+                "y": 3.0909090909090935
             }
         },
         "C:/Users/marku/Desktop/city.tmx#Tileset0001": {
-            "scaleInDock": 4
+            "scaleInDock": 4,
+            "scaleInEditor": 1
+        },
+        "C:/Users/marku/Desktop/city.tmx#tileset_map1": {
+            "scaleInDock": 4,
+            "scaleInEditor": 1
         },
         "city_map.json": {
             "scale": 0.25,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1652,
-                "y": 36
+                "x": 2000,
+                "y": 1696
             }
         },
         "city_map.json#city_tilemap": {
