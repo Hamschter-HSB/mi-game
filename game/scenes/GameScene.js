@@ -746,6 +746,7 @@ class GameScene extends Phaser.Scene {
         // Setze einen Timer, der nach 3 Sekunden wieder deaktiviert
         this.time.delayedCall(6000, () => {
             this.isBoostLocked = false;
+            this.sound.play('nitroReadySound', {volume: GameSettings.volume});
             console.log('Boost unlocked!');
         }, [], this);
     }

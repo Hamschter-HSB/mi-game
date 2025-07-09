@@ -35,6 +35,7 @@ HSB
 Clicksound - https://pixabay.com/sound-effects/click-buttons-ui-menu-sounds-effects-button-7-203601/
 Walksound - https://pixabay.com/de/sound-effects/walking-sound-effect-272246/
 DriveSound - https://pixabay.com/de/sound-effects/tractor-engine-27641/
+NitroReadySound - https://pixabay.com/de/sound-effects/steampunk-mechanical-gadget-188052/
 NitroSound - https://pixabay.com/de/sound-effects/nitro-activation-48077/
 Hornsound - https://pixabay.com/de/sound-effects/car-horn-beep-beep-two-beeps-honk-honk-6188/
 Ignitionsound - https://pixabay.com/sound-effects/car-engine-ignition-fail-352768/
