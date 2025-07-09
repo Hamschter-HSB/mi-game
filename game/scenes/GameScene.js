@@ -77,8 +77,16 @@ class GameScene extends Phaser.Scene {
 
         const ornamentLayer = map.createLayer('Ornaments', tileset, 0, 0); // Layername wie in Tiled
         ornamentLayer.setScale(scaleFactor);
-        ornamentLayer.setDepth(1);
+        ornamentLayer.setDepth(17);
+        
+        const ornamentLayer2 = map.createLayer('Ornaments2', tileset, 0, 0); // Layername wie in Tiled
+        ornamentLayer2.setScale(scaleFactor);
+        ornamentLayer2.setDepth(18);
 
+        const droppedLayer = map.createLayer('Dropped', tileset, 0, 0); // Layername wie in Tiled
+        droppedLayer.setScale(scaleFactor);
+        droppedLayer.setDepth(2);
+        
         const groundLayer = map.createLayer('Ground', tileset, 0, 0); // Layername wie in Tiled
         groundLayer.setScale(scaleFactor);
 
