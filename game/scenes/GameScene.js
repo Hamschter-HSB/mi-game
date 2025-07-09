@@ -408,6 +408,7 @@ class GameScene extends Phaser.Scene {
                 if (delivery) {
                     this.createWaypoints(this.player.x, this.player.y, delivery.x, delivery.y);
                     this.startPizzaDeliveryTimer();
+                    this.sound.play('itemPickupSound', {volume: GameSettings.volume});
 
                     // ⬇️ HIER KUNDE SPAWNEN
                     this.spawnCustomer(delivery.x, delivery.y);
