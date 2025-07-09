@@ -64,6 +64,9 @@ class GameScene extends Phaser.Scene {
 
     // Car
     this.inCar = false;
+    this.isBoostActive = false;
+    this.isBoostLocked = false;
+    this.carSpeedBoost = 1; //Boost-Multiply, wenn "SPACE"-Taste gedrückt wird
     this.carVelocity = { x: 0, y: 0 }; // Für „Nachschieben“
 
     this.car = this.physics.add.sprite(840, 830, 'car');
@@ -636,7 +639,6 @@ class GameScene extends Phaser.Scene {
       }
     } else {
       const carSpeed = 600; // schneller als Spieler
-      this.carSpeedBoost = 1; //Boost-Multiply, wenn "SPACE"-Taste gedrückt wird
       let targetVX = 0;
       let targetVY = 0;
 
@@ -652,11 +654,11 @@ class GameScene extends Phaser.Scene {
 
       // Car-Booost
       if (this.spaceKey.isDown && isDrivingKeyDown) {
-          this.carSpeedBoost = 1.8
+          this.activateCarBoost();
       }
-      if(!this.spaceKey.isDown && isDrivingKeyDown) {
-        this.carSpeedBoost = 1
-      }
+      // if(!this.spaceKey.isDown && isDrivingKeyDown) {
+      //   this.carSpeedBoost = 1
+      // }
 
       // Set car direction
       if (this.keys.W.isDown) targetVY = -carSpeed * this.carSpeedBoost;
@@ -729,5 +731,37 @@ class GameScene extends Phaser.Scene {
     if(this.driveSound.isPlaying)
       this.driveSound.stop();
   }
+
+    activateCarBoost() {
+
+        if (this.isBoostLocked) return; // Locked heißt 6 sec noch nicht um
+
+        this.lockCarBoost()
+
+        if (this.isBoostActive) return; // Verhindere mehrfaches Aktivieren
+
+        this.isBoostActive = true;
+        this.carSpeedBoost = 1.8;
+        console.log('Boost aktiviert!');
+
+        this.time.delayedCall(3000, () => {
+            this.isBoostActive = false;
+            this.carSpeedBoost = 1;
+            console.log('Boost deaktiviert!');
+        }, [], this);
+    }
+
+    lockCarBoost() {
+        if (this.isBoostLocked) return; // Verhindere mehrfaches Aktivieren
+
+        this.isBoostLocked = true;
+        console.log('Boost locked!');
+
+        // Setze einen Timer, der nach 3 Sekunden wieder deaktiviert
+        this.time.delayedCall(6000, () => {
+            this.isBoostLocked = false;
+            console.log('Boost unlocked!');
+        }, [], this);
+    }
 
 }
