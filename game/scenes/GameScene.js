@@ -36,7 +36,7 @@ class GameScene extends Phaser.Scene {
 
         console.log("Scene wurde gestartet!");
 
-        this.timerText = this.add.text(20, 170, `Zeit: ${GameState.minutes >= 10 ? GameState.minutes : '0'+GameState.minutes}:${GameState.seconds >= 10 ? GameState.seconds : '0'+GameState.seconds}`, {
+        this.gameSessionTimer = this.add.text(20, 170, `Zeit: ${GameState.minutes >= 10 ? GameState.minutes : '0'+GameState.minutes}:${GameState.seconds >= 10 ? GameState.seconds : '0'+GameState.seconds}`, {
             fontSize: '100px',
             fontFamily: 'Roboto',
             fontStyle: 'bold',
@@ -48,7 +48,17 @@ class GameScene extends Phaser.Scene {
             .setDepth(9999)
             .setScale(this.scale.width / 1920 * 0.3);
 
-        this.timerText.setDepth(1000);
+        this.deliveryTimer = this.add.text(20, 200, `Auslieferungszeit: ${(GameState.deliveryTimeLeft/1000)} Sekunden`, {
+            fontSize: '100px',
+            fontFamily: 'Roboto',
+            fontStyle: 'bold',
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 6
+        }).setOrigin(0, 0)
+            .setScrollFactor(0)
+            .setDepth(9999)
+            .setScale(this.scale.width / 1920 * 0.3);
 
         // Timer jede Sekunde aufrufen
         this.time.addEvent({
@@ -711,8 +721,34 @@ class GameScene extends Phaser.Scene {
                 }
             }
         }
+        if (GameSettings.experimental == true) {
+          if (GameState.currentLevel === 7) {
+            this.scene.pause();
+            const name = prompt("Du hast gewonnen! Wie heißt du?");
+
+            if (name) {
+                const time = `${GameState.minutes.toString().padStart(2, '0')}:${GameState.seconds.toString().padStart(2, '0')}`;
+                this.sendScoreToServer(name, time);
+            }
+          }
+        }
 
         this.updateNPC();
+    }
+
+    sendScoreToServer(name, time) {
+      if (GameSettings.experimental == true) {
+          fetch('speichern.php', {
+              method: 'POST',
+              headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+              body: `username=${encodeURIComponent(name)}&zeit=${encodeURIComponent(time)}`
+          })
+          .then(res => res.text())
+          .then(data => {
+              console.log(data);
+              window.location.href = 'highscore.php'; // → Highscore-Seite öffnen
+          });
+      }
     }
 
     /**
@@ -796,6 +832,9 @@ class GameScene extends Phaser.Scene {
     updateTimer() {
         if (GameState.deliveryTimeLeft > 0) {
             GameState.deliveryTimeLeft = GameState.deliveryTimeLeft - 1000;
+            const deliveryTimerLeftStr = (GameState.deliveryTimeLeft/1000).toString().padStart(2, '0');
+            this.deliveryTimer.setText(`Auslieferungszeit: ${deliveryTimerLeftStr} Sekunden`);
+
             console.log(GameState.deliveryTimeLeft);
         } else {
             // Timer stoppen, wenn 0 erreicht ist
@@ -821,7 +860,7 @@ class GameScene extends Phaser.Scene {
         const minStr = GameState.minutes.toString().padStart(2, '0');
         const secStr = GameState.seconds.toString().padStart(2, '0');
 
-        this.timerText.setText(`Zeit: ${minStr}:${secStr}`);
+        this.gameSessionTimer.setText(`Zeit: ${minStr}:${secStr}`);
     }
 
 }
