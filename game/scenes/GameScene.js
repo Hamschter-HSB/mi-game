@@ -780,7 +780,7 @@ class GameScene extends Phaser.Scene {
         if (this.isBoostActive) return; // Verhindere mehrfaches Aktivieren
 
         this.isBoostActive = true;
-        this.carSpeedBoost = 1.8;
+        this.carSpeedBoost = 1.6;
 
         // === Sound starten und merken
         this.nitroSoundInstance = this.sound.add('nitroSound');
