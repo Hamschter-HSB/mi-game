@@ -105,6 +105,8 @@ class DeliveryCutsceneScene extends Phaser.Scene {
           this.scene.start('GameScene');
         });
 
+        this.sound.play('itemDropSound', {volume: GameSettings.volume});
+
       } else {
         // Falsche Position – zurück
         gameObject.x = pizzaStartX;
