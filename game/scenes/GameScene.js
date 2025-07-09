@@ -28,7 +28,7 @@ class GameScene extends Phaser.Scene {
         this.load.image('pizzyDelivery', 'assets/img/ui/pizzy/delivery-pizzy.png');
 
         for (let i = 1; i <= 10; i++) {
-          this.load.image(`level${i}`, `assets/img/ui/level/${i}.png`);
+            this.load.image(`level${i}`, `assets/img/ui/level/${i}.png`);
         }
 
 
@@ -128,8 +128,8 @@ class GameScene extends Phaser.Scene {
                 this.menuButton.setScale(width / 1920 * 0.3);
             }
             if (this.levelImage) {
-              this.levelImage.setPosition(20, 20);
-              this.levelImage.setScale(gameSize.width / 1920 * 0.3);
+                this.levelImage.setPosition(20, 20);
+                this.levelImage.setScale(gameSize.width / 1920 * 0.3);
             }
 
         });
@@ -157,12 +157,10 @@ class GameScene extends Phaser.Scene {
             });
 
         this.levelImage = this.add.image(20, 20, `level${GameState.currentLevel}`)
-        .setOrigin(0, 0)
-        .setScrollFactor(0)
-        .setDepth(9999)
-        .setScale(this.scale.width / 1920 * 0.3);
-
-
+            .setOrigin(0, 0)
+            .setScrollFactor(0)
+            .setDepth(9999)
+            .setScale(this.scale.width / 1920 * 0.3);
 
         // NPC's erstellen und hinzufügen
         this.npcs = this.physics.add.group();
@@ -332,10 +330,10 @@ class GameScene extends Phaser.Scene {
             }
         }
         if (this.levelImage) {
-          const levelKey = `level${GameState.currentLevel + 1}`;
-          if (this.levelImage && this.textures.exists(levelKey)) {
-              this.levelImage.setTexture(levelKey);
-          }
+            const levelKey = `level${GameState.currentLevel + 1}`;
+            if (this.levelImage && this.textures.exists(levelKey)) {
+                this.levelImage.setTexture(levelKey);
+            }
         }
 
 
@@ -409,6 +407,7 @@ class GameScene extends Phaser.Scene {
                 const delivery = GameState.deliveryPoints[GameState.deliveryIndex];
                 if (delivery) {
                     this.createWaypoints(this.player.x, this.player.y, delivery.x, delivery.y);
+                    this.startPizzaDeliveryTimer();
 
                     // ⬇️ HIER KUNDE SPAWNEN
                     this.spawnCustomer(delivery.x, delivery.y);
@@ -431,6 +430,7 @@ class GameScene extends Phaser.Scene {
                 // Scene wechseln
 
                 this.stopPlayerWalkSoundIfPlayed();
+                resetDeliveryTimeLeftLeft();
 
                 this.scene.start('DeliveryCutsceneScene');
 
@@ -812,4 +812,27 @@ class GameScene extends Phaser.Scene {
         }, [], this);
     }
 
-}
+    startPizzaDeliveryTimer() {
+        // Timer alle 1000ms (1 Sekunde) ausführen
+        this.timeEvent = this.time.addEvent({
+            delay: 1000,             // 1 Sekunde
+            callback: this.updateTimer,
+            callbackScope: this,
+            loop: true               // damit es wiederholt wird
+        });
+    }
+
+    updateTimer() {
+        if (GameState.deliveryTimeLeft > 0) {
+            decrementDeliveryTimeBySecondLeft()
+            console.log(GameState.deliveryTimeLeft);
+        } else {
+            // Timer stoppen, wenn 0 erreicht ist
+            this.timeEvent.remove();
+
+            // TODO open Game-Over screen and reset game
+            console.log("GAME OVER");
+        }
+    }
+
+    }
