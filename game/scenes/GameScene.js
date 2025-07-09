@@ -835,6 +835,7 @@ class GameScene extends Phaser.Scene {
             console.log("GAME OVER");
             this.scene.get('MusicManagerScene').stopMusic();
             this.sound.play('gameoverSound', {volume: GameSettings.volume});
+            GameState.deliveryTimeLeft = 30000;
             this.scene.start('GameoverScene');
         }
     }
