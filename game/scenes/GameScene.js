@@ -733,24 +733,35 @@ class GameScene extends Phaser.Scene {
   }
 
     activateCarBoost() {
+      if (this.isBoostLocked) return;
 
-        if (this.isBoostLocked) return; // Locked heißt 6 sec noch nicht um
+      this.lockCarBoost();
 
-        this.lockCarBoost()
+      if (this.isBoostActive) return;
 
-        if (this.isBoostActive) return; // Verhindere mehrfaches Aktivieren
+      this.isBoostActive = true;
+      this.carSpeedBoost = 1.8;
 
-        this.isBoostActive = true;
-        this.carSpeedBoost = 1.8;
-        this.sound.play('nitroSound', { volume: GameSettings.volume });
-        console.log('Boost aktiviert!');
+      // === Sound starten und merken
+      this.nitroSoundInstance = this.sound.add('nitroSound');
+      this.nitroSoundInstance.play({ volume: GameSettings.volume * 0.5, loop: true });
 
-        this.time.delayedCall(3000, () => {
-            this.isBoostActive = false;
-            this.carSpeedBoost = 1;
-            console.log('Boost deaktiviert!');
-        }, [], this);
+      console.log('Boost aktiviert!');
+
+      this.time.delayedCall(3000, () => {
+        this.isBoostActive = false;
+        this.carSpeedBoost = 1;
+        console.log('Boost deaktiviert!');
+
+        // === Sound stoppen
+        if (this.nitroSoundInstance) {
+          this.nitroSoundInstance.stop();
+          this.nitroSoundInstance.destroy();
+          this.nitroSoundInstance = null;
+        }
+      }, [], this);
     }
+
 
     lockCarBoost() {
         if (this.isBoostLocked) return; // Verhindere mehrfaches Aktivieren
