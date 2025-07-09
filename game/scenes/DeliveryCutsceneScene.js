@@ -77,7 +77,7 @@ class DeliveryCutsceneScene extends Phaser.Scene {
         });
 
         // GameState aktualisieren
-        let nextIndex = GameState.deliveryIndex + 1;
+        let nextIndex = GameState.deliveryIndex;
         if (nextIndex < GameState.deliveryPoints.length) {
           GameState.deliveryIndex = nextIndex;
           GameState.hasPizza = false;
