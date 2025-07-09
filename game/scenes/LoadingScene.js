@@ -9,7 +9,7 @@ class LoadingScene extends Phaser.Scene {
     this.load.audio('clickSound', ['assets/sounds/click.mp3']);
     this.load.audio('gameoverSound', ['assets/sounds/gameoverSound.mp3']);
     this.load.audio('walkSound', ['assets/sounds/walkSound.mp3']);
-    this.load.audio('driveSound', ['assets/sounds/DriveSound.mp3']);
+    this.load.audio('driveSound', ['assets/sounds/driveSound.mp3']);
     this.load.audio('nitroReadySound', ['assets/sounds/nitroReadySound.mp3']);
     this.load.audio('nitroSound', ['assets/sounds/nitroSound.mp3']);
     this.load.audio('hornSound', ['assets/sounds/hornSound.mp3']);

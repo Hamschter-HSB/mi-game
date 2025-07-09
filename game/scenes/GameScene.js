@@ -17,7 +17,7 @@ class GameScene extends Phaser.Scene {
         this.load.image('customer', 'assets/img/customer.png');
         this.load.image('car', 'assets/img/car.png');
 
-        this.load.image('menuOverlay', 'assets/img/Logo.png');
+        this.load.image('menuOverlay', 'assets/img/logo.png');
         this.load.image('menuBtn', 'assets/img/ui/Menu.png');
 
         this.load.image('pizzyDefault', 'assets/img/ui/pizzy/default-pizzy.png');
@@ -722,7 +722,7 @@ class GameScene extends Phaser.Scene {
             }
         }
         if (GameSettings.experimental == true) {
-          if (GameState.currentLevel === 7) {
+          if (GameState.currentLevel > 6) {
             this.scene.pause();
             const name = prompt("Du hast gewonnen! Wie heißt du?");
 
