@@ -21,6 +21,7 @@ class GameScene extends Phaser.Scene {
     this.load.image('menuOverlay', 'assets/img/Logo.png');
     this.load.image('resumeBtn', 'assets/img/ui/Resume.png');
     this.load.image('exitBtn', 'assets/img/ui/Exit.png');
+    this.load.image('menuBtn', 'assets/img/ui/Menu.png');
 
     this.load.image('pizzyDefault', 'assets/img/ui/pizzy/default-pizzy.png');
     this.load.image('pizzyNewOrder', 'assets/img/ui/pizzy/neworder-pizzy.png');
@@ -114,6 +115,10 @@ class GameScene extends Phaser.Scene {
         this.pizzyAssistant.setPosition(width - 100, height - 100);
         this.pizzyAssistant.setScale(width / 1920 * 0.5);
       }
+      if (this.menuButton) {
+        this.menuButton.setPosition(width - 20, 20);
+        this.menuButton.setScale(width / 1920 * 0.3);
+      }
     });
 
 
@@ -128,17 +133,16 @@ class GameScene extends Phaser.Scene {
 
     this.setupLevel();
 
-    this.menuButton = this.add.text(1700, 20, '☰', {
-      fontSize: '48px',
-      color: '#fff',
-      backgroundColor: 'rgba(0,0,0,0.7)',
-      padding: { x: 10, y: 5 }
-    })
+    this.menuButton = this.add.image(this.scale.width - 20, 20, 'menuBtn')
+    .setOrigin(1, 0) // oben rechts
     .setScrollFactor(0)
     .setInteractive()
+    .setDepth(9999)
+    .setScale(this.scale.width / 1920 * 0.1) // dynamisch skalieren
     .on('pointerdown', () => {
       this.toggleMenu();
     });
+
 
     // NPC's erstellen und hinzufügen
     this.npcs = this.physics.add.group();
