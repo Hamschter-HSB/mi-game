@@ -3,8 +3,9 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "C:/Users/marku/Desktop/city.tmx",
     "expandedProjectPaths": [
+        "."
     ],
     "file.lastUsedOpenFilter": "Alle Dateien (*)",
     "fileStates": {
@@ -12,11 +13,11 @@
             "scaleInDock": 4
         },
         "C:/Users/marku/Desktop/city.tmx": {
-            "scale": 5.5,
+            "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 85.27272727272728,
-                "y": 3.0909090909090935
+                "x": 512.25,
+                "y": 511.75
             }
         },
         "C:/Users/marku/Desktop/city.tmx#Tileset0001": {
@@ -31,8 +32,8 @@
             "scale": 0.25,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 2000,
-                "y": 1696
+                "x": 4096,
+                "y": 4098
             }
         },
         "city_map.json#city_tilemap": {
@@ -48,10 +49,13 @@
     "map.tileWidth": 16,
     "map.width": 64,
     "openFiles": [
+        "C:/Users/marku/Desktop/city.tmx",
+        "city_map.json"
     ],
     "project": "map1.tiled-project",
     "recentFiles": [
-        "city_map.json"
+        "city_map.json",
+        "C:/Users/marku/Desktop/city.tmx"
     ],
     "tileset.embedInMap": true,
     "tileset.tileSize": {
