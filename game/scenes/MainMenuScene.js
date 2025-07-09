@@ -52,6 +52,8 @@ class MainMenuScene extends Phaser.Scene {
           this.scene.remove('GameScene');
         }
         this.scene.add('GameScene', GameScene);
+        this.scene.get('MusicManagerScene').stopMusic();
+        this.scene.get('MusicManagerScene').playActionMusic(this);
         this.scene.start('GameScene');
       }
     });
@@ -65,6 +67,8 @@ class MainMenuScene extends Phaser.Scene {
           this.scene.remove('GameScene');
         }
         this.scene.add('GameScene', GameScene);
+        this.scene.get('MusicManagerScene').stopMusic();
+        this.scene.get('MusicManagerScene').playActionMusic(this);
         this.scene.start('GameScene');
       },
       disabled: GameState.currentLevel === 1

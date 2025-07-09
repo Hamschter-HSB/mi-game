@@ -34,11 +34,9 @@ class GameScene extends Phaser.Scene {
   create() {
     const scaleFactor = 8;
     window.currentScene = this; // for debug
-    this.scene.get('MusicManagerScene').stopMusic();
     this.sound.volume = GameSettings.volume;
+    this.scene.get('MusicManagerScene').playActionMusic();
 
-
-    this.scene.get('MusicManagerScene').playActionMusic(this);
 
     this.menuBG = null;
     this.menuTitle = null;

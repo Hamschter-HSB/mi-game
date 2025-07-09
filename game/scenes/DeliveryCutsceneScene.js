@@ -15,7 +15,7 @@ class DeliveryCutsceneScene extends Phaser.Scene {
     const { width, height } = this.scale;
 
     this.sound.volume = GameSettings.volume;
-    //this.scene.get('MusicManagerScene').playMusic(this);
+    this.scene.get('MusicManagerScene').playActionMusic();
 
     // === Hintergrund ===
     const bg = this.add.image(0, 0, 'BG2').setOrigin(0);
