@@ -52,7 +52,7 @@ class GameScene extends Phaser.Scene {
         // Karte laden
         const map = this.make.tilemap({key: 'pizzamap'});
         const tileset = map.addTilesetImage('tileset_map1', 'tiles'); // name in Tiled + image key
-        
+
         const ornamentLayer = map.createLayer('Ornaments', tileset, 0, 0); // Layername wie in Tiled
         ornamentLayer.setScale(scaleFactor);
         ornamentLayer.setDepth(1);
@@ -840,7 +840,6 @@ class GameScene extends Phaser.Scene {
             // Timer stoppen, wenn 0 erreicht ist
             this.timeEvent.remove();
 
-            // TODO open Game-Over screen and reset game
             console.log("GAME OVER");
             this.scene.get('MusicManagerScene').stopMusic();
             this.sound.play('gameoverSound', {volume: GameSettings.volume});
@@ -849,4 +848,4 @@ class GameScene extends Phaser.Scene {
         }
     }
 
-    }
+}
