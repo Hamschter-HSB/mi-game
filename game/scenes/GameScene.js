@@ -703,8 +703,35 @@ class GameScene extends Phaser.Scene {
                 }
             }
         }
+        if (GameSettings.experimental == true) {
+          if (GameState.currentLevel === 6) {
+            this.scene.pause();
+            const name = prompt("Du hast gewonnen! Wie heißt du?");
+
+            if (name) {
+                const time = `${GameState.minutes.toString().padStart(2, '0')}:${GameState.seconds.toString().padStart(2, '0')}`;
+                this.sendScoreToServer(name, time);
+            }
+          }
+        }
 
         this.updateNPC();
+    }
+
+    if (GameSettings.experimental == true) {
+    sendScoreToServer(name, time) {
+      if (GameSettings.experimental == true) {
+          fetch('speichern.php', {
+              method: 'POST',
+              headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+              body: `username=${encodeURIComponent(name)}&zeit=${encodeURIComponent(time)}`
+          })
+          .then(res => res.text())
+          .then(data => {
+              console.log(data);
+              window.location.href = 'highscore.php'; // → Highscore-Seite öffnen
+          });
+      }
     }
 
     /**
