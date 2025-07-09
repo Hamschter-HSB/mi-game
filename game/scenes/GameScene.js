@@ -103,7 +103,7 @@ class GameScene extends Phaser.Scene {
       .setOrigin(1, 1)
       .setScrollFactor(0)
       .setDepth(9998)
-      .setScale(this.scale.width / 1920 * 0.5); // skalierbar je nach Auflösung
+      .setScale(this.scale.width / 1920 * 0.9); // skalierbar je nach Auflösung
 
     this.scale.on('resize', (gameSize) => {
       if (!gameSize || !this.pizzyAssistant) return;
