@@ -27,6 +27,10 @@ class GameScene extends Phaser.Scene {
         this.load.image('pizzyNewOrder', 'assets/img/ui/pizzy/neworder-pizzy.png');
         this.load.image('pizzyDelivery', 'assets/img/ui/pizzy/delivery-pizzy.png');
 
+        for (let i = 1; i <= 10; i++) {
+          this.load.image(`level${i}`, `assets/img/ui/level/${i}.png`);
+        }
+
 
         // Optionaler Spieler-Sprite
     }
@@ -123,6 +127,11 @@ class GameScene extends Phaser.Scene {
                 this.menuButton.setPosition(width - 20, 20);
                 this.menuButton.setScale(width / 1920 * 0.3);
             }
+            if (this.levelImage) {
+              this.levelImage.setPosition(20, 20);
+              this.levelImage.setScale(gameSize.width / 1920 * 0.3);
+            }
+
         });
 
 
@@ -146,6 +155,13 @@ class GameScene extends Phaser.Scene {
             .on('pointerdown', () => {
                 this.toggleMenu();
             });
+
+        this.levelImage = this.add.image(20, 20, `level${GameState.currentLevel}`)
+        .setOrigin(0, 0)
+        .setScrollFactor(0)
+        .setDepth(9999)
+        .setScale(this.scale.width / 1920 * 0.3);
+
 
 
         // NPC's erstellen und hinzufügen
@@ -315,6 +331,14 @@ class GameScene extends Phaser.Scene {
                 this.spawnCustomer(delivery.x, delivery.y);
             }
         }
+        if (this.levelImage) {
+          const levelKey = `level${GameState.currentLevel + 1}`;
+          if (this.levelImage && this.textures.exists(levelKey)) {
+              this.levelImage.setTexture(levelKey);
+          }
+        }
+
+
     }
 
     updateNPC() {
