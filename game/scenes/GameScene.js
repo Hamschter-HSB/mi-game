@@ -104,6 +104,17 @@ class GameScene extends Phaser.Scene {
       .setDepth(9998)
       .setScale(this.scale.width / 1920 * 0.5); // skalierbar je nach Auflösung
 
+    this.scale.on('resize', (gameSize) => {
+      if (!gameSize || !this.pizzyAssistant) return;
+
+      const width = gameSize.width;
+      const height = gameSize.height;
+
+      if (this.pizzyAssistant) {
+        this.pizzyAssistant.setPosition(width - 100, height - 100);
+        this.pizzyAssistant.setScale(width / 1920 * 0.5);
+      }
+    });
 
 
     // Waypoints
@@ -241,7 +252,17 @@ class GameScene extends Phaser.Scene {
     });
   }
 
+  this.events.once('shutdown', this.shutdown, this);
+
+  } // end of create
+
+  shutdown() {
+    this.scale.off('resize');
+    this.scene.stop('GameScene');
   }
+
+
+
   // game functions
   setupLevel() {
     // Falls Positionen gespeichert → wiederherstellen
@@ -685,27 +706,6 @@ class GameScene extends Phaser.Scene {
         }
       }
     }
-
-    this.scale.on('resize', (gameSize) => {
-      const width = gameSize.width;
-      const height = gameSize.height;
-
-      if (this.pizzyAssistant) {
-        this.pizzyAssistant.setPosition(width - 100, height - 100);
-        this.pizzyAssistant.setScale(width / 1920 * 0.5);
-      }
-
-      // Menüpositionen ebenfalls aktualisieren, wenn sichtbar:
-      if (this.menuVisible && this.menuElements) {
-        const [overlay, logo, resumeBtn, exitBtn] = this.menuElements;
-        overlay.setPosition(width / 2, height / 2).setSize(width, height);
-        logo.setPosition(width / 2, height * 0.2).setScale(this.logoScale);
-        resumeBtn.setPosition(width / 2, height * 0.45).setScale(this.buttonScale);
-        exitBtn.setPosition(width / 2, height * 0.58).setScale(this.buttonScale);
-      }
-    });
-
-
 
     this.updateNPC();
   }

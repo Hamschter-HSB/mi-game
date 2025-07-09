@@ -78,8 +78,14 @@ class DeliveryCutsceneScene extends Phaser.Scene {
         }
 
         // Zurück ins Spiel
+        if (this.scene.get('GameScene')) {
+            this.scene.stop('GameScene');
+            this.scene.remove('GameScene');
+          }
+        this.scene.add('GameScene', GameScene);
         this.time.delayedCall(2000, () => {
           this.scene.start('GameScene');
+
         });
       } else {
         // Falsche Position – zurück zur Box

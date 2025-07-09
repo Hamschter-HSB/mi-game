@@ -44,6 +44,11 @@ class MainMenuScene extends Phaser.Scene {
         GameState.deliveryIndex = 0;
         GameState.hasPizza = false;
         this.sound.play('clickSound', { volume: GameSettings.volume });
+        if (this.scene.get('GameScene')) {
+          this.scene.stop('GameScene');
+          this.scene.remove('GameScene');
+        }
+        this.scene.add('GameScene', GameScene);
         this.scene.start('GameScene');
       }
     });
@@ -52,6 +57,11 @@ class MainMenuScene extends Phaser.Scene {
       key: 'btnContinue',
       callback: () => {
         this.sound.play('clickSound', { volume: GameSettings.volume });
+        if (this.scene.get('GameScene')) {
+          this.scene.stop('GameScene');
+          this.scene.remove('GameScene');
+        }
+        this.scene.add('GameScene', GameScene);
         this.scene.start('GameScene');
       },
       disabled: GameState.currentLevel === 1
