@@ -43,6 +43,9 @@ class MainMenuScene extends Phaser.Scene {
         GameState.currentLevel = 1;
         GameState.deliveryIndex = 0;
         GameState.hasPizza = false;
+        GameState.playerPos = null;
+        GameState.carPos = null;
+        GameState.inCar = false;
         this.sound.play('clickSound', { volume: GameSettings.volume });
         if (this.scene.get('GameScene')) {
           this.scene.stop('GameScene');
