@@ -212,10 +212,39 @@ class GameScene extends Phaser.Scene {
 
         // NPC's erstellen und hinzufügen
         this.npcs = this.physics.add.group();
-        const amountOfNPCS = 20;
+        const amountOfNPCS = 46;
+        let npcSpawnPointX = 2496; // Startbereich
+        let npcSpawnPointY = 1216;
 
         for (let i = 0; i < amountOfNPCS; i++) {
-            const npc = this.physics.add.sprite(1152 + 128 * i, 896 + 128 * i, 'npc');
+
+            if (i > 5){ // Brückenstadt
+                npcSpawnPointX = 1856;
+                npcSpawnPointY = 2838;
+            }
+            if (i > 11){ // Park
+                npcSpawnPointX = 6071;
+                npcSpawnPointY = 1078;
+            }
+            if (i > 17){ // Flussplatz
+                npcSpawnPointX = 6093;
+                npcSpawnPointY = 2240;
+            }
+            if (i > 23){ // Strand
+                npcSpawnPointX = 192;
+                npcSpawnPointY = 7451;
+            }
+            if (i > 27){ // Innenstadt
+                npcSpawnPointX = 5136;
+                npcSpawnPointY = 6144;
+            }          
+            if (i > 40){ // Bürogebäudeplaza
+                npcSpawnPointX = 7492;  
+                npcSpawnPointY = 6592;
+            }          
+
+            
+            const npc = this.physics.add.sprite(npcSpawnPointX, npcSpawnPointY, 'npc');
             npc.setScale(scaleFactor);
             npc.setDepth(15);
             npc.setCollideWorldBounds(true); // bleibt im Weltbereich
