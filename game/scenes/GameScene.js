@@ -718,7 +718,6 @@ class GameScene extends Phaser.Scene {
         this.updateNPC();
     }
 
-    if (GameSettings.experimental == true) {
     sendScoreToServer(name, time) {
       if (GameSettings.experimental == true) {
           fetch('speichern.php', {
