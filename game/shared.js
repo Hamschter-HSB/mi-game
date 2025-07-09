@@ -23,14 +23,14 @@ const Levels = {
     pickup: {x: 1215, y: 967},
     deliveries: [
       {x: 2195, y: 315},
-      {x: 2879, y: 980} // wird übersprungen warum??? immer jedes 2te
+      {x: 2879, y: 980}
     ]
   },
   3: {
     pickup: {x: 1215, y: 967},
     deliveries: [
       {x: 1347, y: 3021},
-      {x: 2490, y: 3008}, // wird übersprungen warum???
+      {x: 2490, y: 3008},
       {x: 2887, y: 3008}
     ]
   }
