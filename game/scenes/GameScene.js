@@ -714,7 +714,7 @@ class GameScene extends Phaser.Scene {
             }
         }
         if (GameSettings.experimental == true) {
-          if (GameState.currentLevel === 7) {
+          if (GameState.currentLevel > 6) {
             this.scene.pause();
             const name = prompt("Du hast gewonnen! Wie heißt du?");
 
