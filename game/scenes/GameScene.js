@@ -626,7 +626,8 @@ class GameScene extends Phaser.Scene {
                 this.car.setVelocity(0, 0);
                 this.carVelocity = {x: 0, y: 0};
 
-                this.stopCarDriveSoundIfPlayed()
+                this.stopCarDriveSoundIfPlayed();
+                this.stopCarNitroSoundIfPlayed();
             }
         }
 
@@ -753,11 +754,22 @@ class GameScene extends Phaser.Scene {
     }
 
     /**
-     * Deaktiviert den Lauf-Sound eines Spielers
+     * Deaktiviert den Fahr-Sound eines Autos
      */
     stopCarDriveSoundIfPlayed() {
         if (this.driveSound.isPlaying)
             this.driveSound.stop();
+    }
+
+    /**
+     * Deaktiviert den Boost-Sound eines Autos
+     */
+    stopCarNitroSoundIfPlayed() {
+        if (this.nitroSoundInstance) {
+            this.nitroSoundInstance.stop();
+            this.nitroSoundInstance.destroy();
+            this.nitroSoundInstance = null;
+        }
     }
 
     activateCarBoost() {
@@ -782,11 +794,7 @@ class GameScene extends Phaser.Scene {
             console.log('Boost deaktiviert!');
 
             // === Sound stoppen
-            if (this.nitroSoundInstance) {
-                this.nitroSoundInstance.stop();
-                this.nitroSoundInstance.destroy();
-                this.nitroSoundInstance = null;
-            }
+            this.stopCarNitroSoundIfPlayed()
         }, [], this);
     }
 
