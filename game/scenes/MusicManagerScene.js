@@ -16,6 +16,15 @@ class MusicManagerScene extends Phaser.Scene {
     }
   }
 
+  playActionMusic(scene) {
+    if (!this.music) {
+      this.music = scene.sound.add('actionMusic', { loop: true, volume: GameSettings.volume * 0.7 });
+      this.music.play();
+    } else {
+      this.music.setVolume(GameSettings.volume);
+    }
+  }
+
   stopMusic() {
     if (this.music) {
       this.music.stop();

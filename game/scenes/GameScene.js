@@ -37,6 +37,9 @@ class GameScene extends Phaser.Scene {
     this.scene.get('MusicManagerScene').stopMusic();
     this.sound.volume = GameSettings.volume;
 
+
+    this.scene.get('MusicManagerScene').playActionMusic(this);
+
     this.menuBG = null;
     this.menuTitle = null;
     this.resumeButton = null;
@@ -528,7 +531,10 @@ class GameScene extends Phaser.Scene {
           .setScrollFactor(0)
           .setDepth(10000)
           .setInteractive()
-          .on('pointerdown', () => this.toggleMenu());
+          .on('pointerdown', () => {
+            this.sound.play('clickSound', { volume: GameSettings.volume });
+            this.toggleMenu()
+          });
         this.menuElements.push(resumeBtn);
 
         // Exit Button
@@ -539,6 +545,7 @@ class GameScene extends Phaser.Scene {
           .setDepth(10000)
           .setInteractive()
           .on('pointerdown', () => {
+            this.scene.get('MusicManagerScene').stopMusic();
             this.sound.play('clickSound', { volume: GameSettings.volume });
             this.scene.start('MainMenuScene');
           });
