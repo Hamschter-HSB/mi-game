@@ -430,7 +430,7 @@ class GameScene extends Phaser.Scene {
                 // Scene wechseln
 
                 this.stopPlayerWalkSoundIfPlayed();
-                resetDeliveryTimeLeftLeft();
+                GameState.deliveryTimeLeft = 30000;
 
                 this.scene.start('DeliveryCutsceneScene');
 
@@ -824,7 +824,7 @@ class GameScene extends Phaser.Scene {
 
     updateTimer() {
         if (GameState.deliveryTimeLeft > 0) {
-            decrementDeliveryTimeBySecondLeft()
+            GameState.deliveryTimeLeft = GameState.deliveryTimeLeft - 1000;
             console.log(GameState.deliveryTimeLeft);
         } else {
             // Timer stoppen, wenn 0 erreicht ist

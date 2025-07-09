@@ -63,13 +63,4 @@ function getBrightnessAlpha() {
   return Math.max(0, 1 - Math.min(GameSettings.brightness, 1));
 }
 
-// Delivery Time
-function resetDeliveryTimeLeftLeft() {
-  this.deliveryTimeLeft = 30000;
-}
-
-function decrementDeliveryTimeBySecondLeft() {
-  this.deliveryTimeLeft = this.deliveryTimeLeft - 1000;
-}
-
 // phaser
