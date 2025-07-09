@@ -10,6 +10,8 @@ const GameState = {
   pickup: null,
   deliveryPoints: [],
   deliveryTimeLeft: 30000,
+  seconds: 0,
+  minutes: 0,
   playerPos: null,
   carPos: null,
   inCar: false

@@ -3,7 +3,6 @@ class GameScene extends Phaser.Scene {
         super('GameScene');
     }
 
-
     preload() {
         this.load.tilemapTiledJSON('pizzamap', 'assets/map/map1.json');
         this.load.image('tiles', 'assets/img/tileset_map1.png');
@@ -34,6 +33,31 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
+
+        console.log("Scene wurde gestartet!");
+
+        this.timerText = this.add.text(20, 170, `Zeit: ${GameState.minutes >= 10 ? GameState.minutes : '0'+GameState.minutes}:${GameState.seconds >= 10 ? GameState.seconds : '0'+GameState.seconds}`, {
+            fontSize: '100px',
+            fontFamily: 'Roboto',
+            fontStyle: 'bold',
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 6
+        }).setOrigin(0, 0)
+            .setScrollFactor(0)
+            .setDepth(9999)
+            .setScale(this.scale.width / 1920 * 0.3);
+
+        this.timerText.setDepth(1000);
+
+        // Timer jede Sekunde aufrufen
+        this.time.addEvent({
+            delay: 1000,        // 1000 ms = 1 Sekunde
+            callback: this.updateGameTimer,
+            callbackScope: this,
+            loop: true
+        });
+
         const scaleFactor = 8;
         window.currentScene = this; // for debug
         this.sound.volume = GameSettings.volume;
@@ -775,6 +799,21 @@ class GameScene extends Phaser.Scene {
             GameState.deliveryTimeLeft = 30000;
             this.scene.start('GameoverScene');
         }
+    }
+
+    updateGameTimer() {
+        GameState.seconds++;
+
+        if (GameState.seconds >= 60) {
+            GameState.seconds = 0;
+            GameState.minutes++;
+        }
+
+        // Anzeige aktualisieren
+        const minStr = GameState.minutes.toString().padStart(2, '0');
+        const secStr = GameState.seconds.toString().padStart(2, '0');
+
+        this.timerText.setText(`Zeit: ${minStr}:${secStr}`);
     }
 
 }
