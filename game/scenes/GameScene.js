@@ -87,11 +87,11 @@ class GameScene extends Phaser.Scene {
 
         const ornamentLayer = map.createLayer('Ornaments', tileset, 0, 0); // Layername wie in Tiled
         ornamentLayer.setScale(scaleFactor);
-        ornamentLayer.setDepth(17);
+        ornamentLayer.setDepth(18);
         
         const ornamentLayer2 = map.createLayer('Ornaments2', tileset, 0, 0); // Layername wie in Tiled
         ornamentLayer2.setScale(scaleFactor);
-        ornamentLayer2.setDepth(18);
+        ornamentLayer2.setDepth(19);
 
         const droppedLayer = map.createLayer('Dropped', tileset, 0, 0); // Layername wie in Tiled
         droppedLayer.setScale(scaleFactor);
@@ -103,6 +103,8 @@ class GameScene extends Phaser.Scene {
         const ObjectLayer = map.createLayer('Objects', tileset, 0, 0); // Layername wie in Tiled
         ObjectLayer.setScale(scaleFactor);
         ObjectLayer.setCollisionByExclusion([-1]);
+        ObjectLayer.setDepth(17);
+
 
         // Spieler hinzufügen
         this.player = this.physics.add.sprite(1230, 1152, 'player'); // ← wichtig: physics.add!
