@@ -36,7 +36,7 @@ class GameScene extends Phaser.Scene {
 
         console.log("Scene wurde gestartet!");
 
-        this.gameSessionTimer = this.add.text(20, 170, `Zeit: ${GameState.minutes >= 10 ? GameState.minutes : '0'+GameState.minutes}:${GameState.seconds >= 10 ? GameState.seconds : '0'+GameState.seconds}`, {
+        this.gameSessionTimer = this.add.text(20, 170, `Zeit: ${GameState.minutes >= 10 ? GameState.minutes : '0' + GameState.minutes}:${GameState.seconds >= 10 ? GameState.seconds : '0' + GameState.seconds}`, {
             fontSize: '100px',
             fontFamily: 'Roboto',
             fontStyle: 'bold',
@@ -48,7 +48,7 @@ class GameScene extends Phaser.Scene {
             .setDepth(9999)
             .setScale(this.scale.width / 1920 * 0.3);
 
-        this.deliveryTimer = this.add.text(20, 200, `Auslieferungszeit: ${(GameState.deliveryTimeLeft/1000)} Sekunden`, {
+        this.deliveryTimer = this.add.text(20, 200, `Auslieferungszeit: ${(GameState.deliveryTimeLeft / 1000)} Sekunden`, {
             fontSize: '100px',
             fontFamily: 'Roboto',
             fontStyle: 'bold',
@@ -82,13 +82,13 @@ class GameScene extends Phaser.Scene {
 
 
         // Karte laden
-        const map = this.make.tilemap({key: 'pizzamap'});
+        const map = this.make.tilemap({ key: 'pizzamap' });
         const tileset = map.addTilesetImage('tileset_map1', 'tiles'); // name in Tiled + image key
 
         const ornamentLayer = map.createLayer('Ornaments', tileset, 0, 0); // Layername wie in Tiled
         ornamentLayer.setScale(scaleFactor);
         ornamentLayer.setDepth(17);
-        
+
         const ornamentLayer2 = map.createLayer('Ornaments2', tileset, 0, 0); // Layername wie in Tiled
         ornamentLayer2.setScale(scaleFactor);
         ornamentLayer2.setDepth(18);
@@ -96,7 +96,7 @@ class GameScene extends Phaser.Scene {
         const droppedLayer = map.createLayer('Dropped', tileset, 0, 0); // Layername wie in Tiled
         droppedLayer.setScale(scaleFactor);
         droppedLayer.setDepth(2);
-        
+
         const groundLayer = map.createLayer('Ground', tileset, 0, 0); // Layername wie in Tiled
         groundLayer.setScale(scaleFactor);
 
@@ -104,11 +104,31 @@ class GameScene extends Phaser.Scene {
         ObjectLayer.setScale(scaleFactor);
         ObjectLayer.setCollisionByExclusion([-1]);
 
+        const collisionObjects = map.getObjectLayer('Collisions')['objects'];
+        const collisionGroup = this.physics.add.staticGroup();
+
+
+        collisionObjects.forEach((objData) => {
+            const { x, y, width, height } = objData;
+
+            const scaledX = (x + width / 2) * scaleFactor;
+            const scaledY = (y + height / 2) * scaleFactor;
+            const scaledWidth = width * scaleFactor;
+            const scaledHeight = height * scaleFactor;
+
+            const rect = this.add.rectangle(scaledX, scaledY, scaledWidth, scaledHeight);
+            this.physics.add.existing(rect, true);
+            collisionGroup.add(rect);
+        });
+
+
         // Spieler hinzufügen
         this.player = this.physics.add.sprite(1230, 1152, 'player'); // ← wichtig: physics.add!
         this.player.setScale(scaleFactor);
         this.player.setCollideWorldBounds(true);
         this.player.setDepth(15);
+        this.player.body.setSize(10, 3);          // Größe der Hitbox
+        this.player.body.setOffset(3, 13);
         this.walkSound = this.sound.add('walkSound', {
             volume: GameSettings.volume,
             loop: true // Sound soll bei gedrückter Taste durchgehend spielen
@@ -119,7 +139,7 @@ class GameScene extends Phaser.Scene {
         this.isBoostActive = false;
         this.isBoostLocked = false;
         this.carSpeedBoost = 1; //Boost-Multiply, wenn "SPACE"-Taste gedrückt wird
-        this.carVelocity = {x: 0, y: 0}; // Für „Nachschieben“
+        this.carVelocity = { x: 0, y: 0 }; // Für „Nachschieben“
 
         this.car = this.physics.add.sprite(840, 830, 'car');
         this.car.setCollideWorldBounds(true);
@@ -131,8 +151,8 @@ class GameScene extends Phaser.Scene {
         });
 
         // adding collision
-        this.physics.add.collider(this.player, ObjectLayer);
-        this.physics.add.collider(this.car, ObjectLayer);
+        this.physics.add.collider(this.player, collisionGroup);
+        this.physics.add.collider(this.car, collisionGroup);
         this.physics.add.collider(this.player, this.npcs, (player, npc) => {
             console.log('Spieler kollidiert mit NPC!');
         });
@@ -218,35 +238,37 @@ class GameScene extends Phaser.Scene {
 
         for (let i = 0; i < amountOfNPCS; i++) {
 
-            if (i > 5){ // Brückenstadt
+            if (i > 5) { // Brückenstadt
                 npcSpawnPointX = 1856;
                 npcSpawnPointY = 2838;
             }
-            if (i > 11){ // Park
+            if (i > 11) { // Park
                 npcSpawnPointX = 6071;
                 npcSpawnPointY = 1078;
             }
-            if (i > 17){ // Flussplatz
+            if (i > 17) { // Flussplatz
                 npcSpawnPointX = 6093;
                 npcSpawnPointY = 2240;
             }
-            if (i > 23){ // Strand
+            if (i > 23) { // Strand
                 npcSpawnPointX = 192;
                 npcSpawnPointY = 7451;
             }
-            if (i > 27){ // Innenstadt
+            if (i > 27) { // Innenstadt
                 npcSpawnPointX = 5136;
                 npcSpawnPointY = 6144;
-            }          
-            if (i > 40){ // Bürogebäudeplaza
-                npcSpawnPointX = 7492;  
+            }
+            if (i > 40) { // Bürogebäudeplaza
+                npcSpawnPointX = 7492;
                 npcSpawnPointY = 6592;
-            }          
+            }
 
-            
+
             const npc = this.physics.add.sprite(npcSpawnPointX, npcSpawnPointY, 'npc');
             npc.setScale(scaleFactor);
             npc.setDepth(15);
+            npc.body.setSize(10, 3);          // Größe der Hitbox
+            npc.body.setOffset(3, 13);
             npc.setCollideWorldBounds(true); // bleibt im Weltbereich
 
             // Richtungswerte speichern
@@ -276,7 +298,7 @@ class GameScene extends Phaser.Scene {
         if (!this.anims.exists('walk-down')) {
             this.anims.create({
                 key: 'walk-down',
-                frames: this.anims.generateFrameNumbers('player', {frames: [0, 1, 0, 2]}),
+                frames: this.anims.generateFrameNumbers('player', { frames: [0, 1, 0, 2] }),
                 frameRate: 8,
                 repeat: -1
             });
@@ -286,7 +308,7 @@ class GameScene extends Phaser.Scene {
         if (!this.anims.exists('walk-left')) {
             this.anims.create({
                 key: 'walk-left',
-                frames: this.anims.generateFrameNumbers('player', {frames: [3, 4, 3, 5]}),
+                frames: this.anims.generateFrameNumbers('player', { frames: [3, 4, 3, 5] }),
                 frameRate: 8,
                 repeat: -1
             });
@@ -296,7 +318,7 @@ class GameScene extends Phaser.Scene {
         if (!this.anims.exists('walk-right')) {
             this.anims.create({
                 key: 'walk-right',
-                frames: this.anims.generateFrameNumbers('player', {frames: [6, 7, 6, 8]}),
+                frames: this.anims.generateFrameNumbers('player', { frames: [6, 7, 6, 8] }),
                 frameRate: 8,
                 repeat: -1
             });
@@ -306,7 +328,7 @@ class GameScene extends Phaser.Scene {
         if (!this.anims.exists('walk-up')) {
             this.anims.create({
                 key: 'walk-up',
-                frames: this.anims.generateFrameNumbers('player', {frames: [9, 10, 9, 11]}),
+                frames: this.anims.generateFrameNumbers('player', { frames: [9, 10, 9, 11] }),
                 frameRate: 8,
                 repeat: -1
             });
@@ -316,7 +338,7 @@ class GameScene extends Phaser.Scene {
         if (!this.anims.exists('npc-walk-down')) {
             this.anims.create({
                 key: 'npc-walk-down',
-                frames: this.anims.generateFrameNumbers('npc', {frames: [0, 1, 0, 2]}),
+                frames: this.anims.generateFrameNumbers('npc', { frames: [0, 1, 0, 2] }),
                 frameRate: 8,
                 repeat: -1
             });
@@ -326,7 +348,7 @@ class GameScene extends Phaser.Scene {
         if (!this.anims.exists('npc-walk-left')) {
             this.anims.create({
                 key: 'npc-walk-left',
-                frames: this.anims.generateFrameNumbers('npc', {frames: [3, 4, 3, 5]}),
+                frames: this.anims.generateFrameNumbers('npc', { frames: [3, 4, 3, 5] }),
                 frameRate: 8,
                 repeat: -1
             });
@@ -336,7 +358,7 @@ class GameScene extends Phaser.Scene {
         if (!this.anims.exists('npc-walk-right')) {
             this.anims.create({
                 key: 'npc-walk-right',
-                frames: this.anims.generateFrameNumbers('npc', {frames: [6, 7, 6, 8]}),
+                frames: this.anims.generateFrameNumbers('npc', { frames: [6, 7, 6, 8] }),
                 frameRate: 8,
                 repeat: -1
             });
@@ -346,7 +368,7 @@ class GameScene extends Phaser.Scene {
         if (!this.anims.exists('npc-walk-up')) {
             this.anims.create({
                 key: 'npc-walk-up',
-                frames: this.anims.generateFrameNumbers('npc', {frames: [9, 10, 9, 11]}),
+                frames: this.anims.generateFrameNumbers('npc', { frames: [9, 10, 9, 11] }),
                 frameRate: 8,
                 repeat: -1
             });
@@ -427,11 +449,11 @@ class GameScene extends Phaser.Scene {
 
     changeDirection() {
         const directions = [
-            {dx: 7, dy: 0},
-            {dx: -7, dy: 0},
-            {dx: 0, dy: 7},
-            {dx: 0, dy: -7},
-            {dx: 0, dy: 0}
+            { dx: 7, dy: 0 },
+            { dx: -7, dy: 0 },
+            { dx: 0, dy: 7 },
+            { dx: 0, dy: -7 },
+            { dx: 0, dy: 0 }
         ];
 
         this.npcs.children.iterate(npc => {
@@ -486,7 +508,7 @@ class GameScene extends Phaser.Scene {
                 if (delivery) {
                     this.createWaypoints(this.player.x, this.player.y, delivery.x, delivery.y);
                     this.startPizzaDeliveryTimer();
-                    this.sound.play('itemPickupSound', {volume: GameSettings.volume});
+                    this.sound.play('itemPickupSound', { volume: GameSettings.volume });
 
                     // ⬇️ HIER KUNDE SPAWNEN
                     this.spawnCustomer(delivery.x, delivery.y);
@@ -501,8 +523,8 @@ class GameScene extends Phaser.Scene {
                 }
 
                 // Vorher speichern
-                GameState.playerPos = {x: this.player.x, y: this.player.y};
-                GameState.carPos = {x: this.car.x, y: this.car.y};
+                GameState.playerPos = { x: this.player.x, y: this.player.y };
+                GameState.carPos = { x: this.car.x, y: this.car.y };
                 GameState.inCar = this.inCar;
 
 
@@ -589,12 +611,12 @@ class GameScene extends Phaser.Scene {
     getPlayerCoords() {
         if (this.player) {
             console.log(`Player coords: x=${Math.round(this.player.x)}, y=${Math.round(this.player.y)}`);
-            return {x: Math.round(this.player.x), y: Math.round(this.player.y)};
+            return { x: Math.round(this.player.x), y: Math.round(this.player.y) };
         }
     }
 
     toggleMenu() {
-        this.scene.launch('PauseMenuScene', {pausedSceneKey: this.scene.key});
+        this.scene.launch('PauseMenuScene', { pausedSceneKey: this.scene.key });
         this.scene.bringToTop('PauseMenuScene');
         this.scene.pause();
     }
@@ -621,7 +643,7 @@ class GameScene extends Phaser.Scene {
                     this.cameras.main.startFollow(this.car);
 
                     //Ignition sound
-                    this.sound.play('IgnitionSound', {volume: GameSettings.volume});
+                    this.sound.play('IgnitionSound', { volume: GameSettings.volume });
 
                 }
             } else {
@@ -633,7 +655,7 @@ class GameScene extends Phaser.Scene {
                 this.player.setVisible(true);
                 this.cameras.main.startFollow(this.player);
                 this.car.setVelocity(0, 0);
-                this.carVelocity = {x: 0, y: 0};
+                this.carVelocity = { x: 0, y: 0 };
 
                 this.stopCarDriveSoundIfPlayed();
                 this.stopCarNitroSoundIfPlayed();
@@ -716,7 +738,7 @@ class GameScene extends Phaser.Scene {
 
             if (Phaser.Input.Keyboard.JustDown(this.hKey)) {
                 if (this.inCar)
-                    this.sound.play('hornSound', {volume: GameSettings.volume});
+                    this.sound.play('hornSound', { volume: GameSettings.volume });
             }
 
         }
@@ -751,33 +773,33 @@ class GameScene extends Phaser.Scene {
             }
         }
         if (GameSettings.experimental == true) {
-          if (GameState.currentLevel > 6) {
-            this.scene.pause();
-            const name = prompt("Du hast gewonnen! Wie heißt du?");
+            if (GameState.currentLevel > 6) {
+                this.scene.pause();
+                const name = prompt("Du hast gewonnen! Wie heißt du?");
 
-            if (name) {
-                const time = `${GameState.minutes.toString().padStart(2, '0')}:${GameState.seconds.toString().padStart(2, '0')}`;
-                this.sendScoreToServer(name, time);
+                if (name) {
+                    const time = `${GameState.minutes.toString().padStart(2, '0')}:${GameState.seconds.toString().padStart(2, '0')}`;
+                    this.sendScoreToServer(name, time);
+                }
             }
-          }
         }
 
         this.updateNPC();
     }
 
     sendScoreToServer(name, time) {
-      if (GameSettings.experimental == true) {
-          fetch('speichern.php', {
-              method: 'POST',
-              headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-              body: `username=${encodeURIComponent(name)}&zeit=${encodeURIComponent(time)}`
-          })
-          .then(res => res.text())
-          .then(data => {
-              console.log(data);
-              window.location.href = 'highscore.php'; // → Highscore-Seite öffnen
-          });
-      }
+        if (GameSettings.experimental == true) {
+            fetch('speichern.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(name)}&zeit=${encodeURIComponent(time)}`
+            })
+                .then(res => res.text())
+                .then(data => {
+                    console.log(data);
+                    window.location.href = 'highscore.php'; // → Highscore-Seite öffnen
+                });
+        }
     }
 
     /**
@@ -819,7 +841,7 @@ class GameScene extends Phaser.Scene {
 
         // === Sound starten und merken
         this.nitroSoundInstance = this.sound.add('nitroSound');
-        this.nitroSoundInstance.play({volume: GameSettings.volume * 0.5, loop: true});
+        this.nitroSoundInstance.play({ volume: GameSettings.volume * 0.5, loop: true });
 
         console.log('Boost aktiviert!');
 
@@ -843,7 +865,7 @@ class GameScene extends Phaser.Scene {
         // Setze einen Timer, der nach 3 Sekunden wieder deaktiviert
         this.time.delayedCall(6000, () => {
             this.isBoostLocked = false;
-            this.sound.play('nitroReadySound', {volume: GameSettings.volume});
+            this.sound.play('nitroReadySound', { volume: GameSettings.volume });
             console.log('Boost unlocked!');
         }, [], this);
     }
@@ -861,7 +883,7 @@ class GameScene extends Phaser.Scene {
     updateTimer() {
         if (GameState.deliveryTimeLeft > 0) {
             GameState.deliveryTimeLeft = GameState.deliveryTimeLeft - 1000;
-            const deliveryTimerLeftStr = (GameState.deliveryTimeLeft/1000).toString().padStart(2, '0');
+            const deliveryTimerLeftStr = (GameState.deliveryTimeLeft / 1000).toString().padStart(2, '0');
             this.deliveryTimer.setText(`Auslieferungszeit: ${deliveryTimerLeftStr} Sekunden`);
 
             console.log(GameState.deliveryTimeLeft);
@@ -871,7 +893,7 @@ class GameScene extends Phaser.Scene {
 
             console.log("GAME OVER");
             this.scene.get('MusicManagerScene').stopMusic();
-            this.sound.play('gameoverSound', {volume: GameSettings.volume});
+            this.sound.play('gameoverSound', { volume: GameSettings.volume });
             GameState.deliveryTimeLeft = 30000;
             this.scene.start('GameoverScene');
         }

@@ -9,15 +9,18 @@
     ],
     "file.lastUsedOpenFilter": "Alle Dateien (*)",
     "fileStates": {
+        "": {
+            "scaleInEditor": 3
+        },
         "#Tileset0001": {
             "scaleInDock": 4
         },
         "C:/Users/marku/Desktop/city.tmx": {
-            "scale": 2,
-            "selectedLayer": 0,
+            "scale": 3,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 261,
-                "y": 351.5
+                "x": 550,
+                "y": 620
             }
         },
         "C:/Users/marku/Desktop/city.tmx#Tileset0001": {
@@ -53,6 +56,7 @@
     },
     "last.exportedFilePath": "C:/Users/marku/Desktop/MI game/mi-game/assets/map",
     "last.imagePath": "C:/Users/marku/Desktop",
+    "lastUsedTilesetExportFilter": "JSON-Kachelsatz-Dateien (*.tsj *.json)",
     "map.height": 64,
     "map.lastUsedExportFilter": "JSON-Kartendateien (*.tmj *.json)",
     "map.lastUsedFormat": "tmx",
@@ -60,14 +64,14 @@
     "map.tileWidth": 16,
     "map.width": 64,
     "openFiles": [
-        "C:/Users/marku/Desktop/city.tmx",
-        "city_map.json"
+        "C:/Users/marku/Desktop/city.tmx"
     ],
     "project": "map1.tiled-project",
+    "property.type": "bool",
     "recentFiles": [
+        "C:/Users/marku/Desktop/city.tmx",
         "city_map.json",
-        "map1.json",
-        "C:/Users/marku/Desktop/city.tmx"
+        "map1.json"
     ],
     "tileset.embedInMap": true,
     "tileset.tileSize": {
