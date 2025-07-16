@@ -6,6 +6,10 @@ class GameScene extends Phaser.Scene {
     preload() {
         this.load.tilemapTiledJSON('pizzamap', 'assets/map/map1.json');
         this.load.image('tiles', 'assets/img/tileset_map1.png');
+        this.load.spritesheet('tileset_sprites', 'assets/img/tileset_map1.png', {
+            frameWidth: 16,
+            frameHeight: 16
+        });
         this.load.spritesheet('player', 'assets/img/player.png', {
             frameWidth: 16,
             frameHeight: 16
@@ -87,11 +91,11 @@ class GameScene extends Phaser.Scene {
 
         const ornamentLayer = map.createLayer('Ornaments', tileset, 0, 0); // Layername wie in Tiled
         ornamentLayer.setScale(scaleFactor);
-        ornamentLayer.setDepth(17);
+        ornamentLayer.setDepth(9980);
 
         const ornamentLayer2 = map.createLayer('Ornaments2', tileset, 0, 0); // Layername wie in Tiled
         ornamentLayer2.setScale(scaleFactor);
-        ornamentLayer2.setDepth(18);
+        ornamentLayer2.setDepth(9981);
 
         const droppedLayer = map.createLayer('Dropped', tileset, 0, 0); // Layername wie in Tiled
         droppedLayer.setScale(scaleFactor);
@@ -121,13 +125,32 @@ class GameScene extends Phaser.Scene {
             collisionGroup.add(rect);
         });
 
+        const objectLayer = map.getObjectLayer('DynamicLayering');
+        this.depthGroup = this.add.group();
+
+        const tileWidth = tileset.tileWidth * scaleFactor;  // z.B. 16 * 8 = 128
+        const tileHeight = tileset.tileHeight * scaleFactor;
+
+        objectLayer.objects.forEach(obj => {
+            if (!obj.gid) return;
+
+            const frame = obj.gid - tileset.firstgid;
+            const spriteX = (obj.x * scaleFactor) + (tileWidth / 2);
+            const spriteY = (obj.y * scaleFactor);
+
+            const sprite = this.add.sprite(spriteX, spriteY, 'tileset_sprites', frame)
+                .setOrigin(0.5, 1)
+                .setScale(scaleFactor)
+                .setDepth(spriteY);
+            this.depthGroup.add(sprite);
+        });
+
 
         // Spieler hinzufügen
-        this.player = this.physics.add.sprite(1230, 1152, 'player'); // ← wichtig: physics.add!
-        this.player.setScale(scaleFactor);
-        this.player.setCollideWorldBounds(true);
-        this.player.setDepth(15);
-        this.player.body.setSize(10, 3);          // Größe der Hitbox
+        this.player = this.physics.add.sprite(1230, 1152, 'player')
+            .setScale(scaleFactor)
+            .setCollideWorldBounds(true)
+        this.player.body.setSize(10, 3)          // Größe der Hitbox
         this.player.body.setOffset(3, 13);
         this.walkSound = this.sound.add('walkSound', {
             volume: GameSettings.volume,
@@ -141,9 +164,9 @@ class GameScene extends Phaser.Scene {
         this.carSpeedBoost = 1; //Boost-Multiply, wenn "SPACE"-Taste gedrückt wird
         this.carVelocity = { x: 0, y: 0 }; // Für „Nachschieben“
 
-        this.car = this.physics.add.sprite(840, 830, 'car');
-        this.car.setCollideWorldBounds(true);
-        this.car.setDepth(16);
+        this.car = this.physics.add.sprite(840, 830, 'car')
+            .setCollideWorldBounds(true)
+            .setDepth(16);
 
         this.driveSound = this.sound.add('driveSound', {
             volume: GameSettings.volume,
@@ -628,6 +651,10 @@ class GameScene extends Phaser.Scene {
         const playerSpeed = 200;
         const body = this.player.body;
         const player = this.player
+
+
+        this.player.setDepth(this.player.y + 64);
+        this.car.setDepth(this.car.y);
 
         // F drücken → einsteigen oder aussteigen
         if (Phaser.Input.Keyboard.JustDown(this.fKey)) {
