@@ -91,7 +91,7 @@ class MainMenuScene extends Phaser.Scene {
     });
 
     // Buttons anzeigen
-    const buttonScale = 0.5;
+    const buttonScale = 0.3;
     const buttonSpacing = 10;
     const totalHeight = buttons.length * 100 * buttonScale + (buttons.length - 1) * buttonSpacing;
     let startY = height / 2 - totalHeight / 2 + 80;

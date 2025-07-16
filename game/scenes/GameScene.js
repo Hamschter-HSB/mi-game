@@ -104,10 +104,6 @@ class GameScene extends Phaser.Scene {
         const groundLayer = map.createLayer('Ground', tileset, 0, 0); // Layername wie in Tiled
         groundLayer.setScale(scaleFactor);
 
-        const ObjectLayer = map.createLayer('Objects', tileset, 0, 0); // Layername wie in Tiled
-        ObjectLayer.setScale(scaleFactor);
-        ObjectLayer.setCollisionByExclusion([-1]);
-
         const collisionObjects = map.getObjectLayer('Collisions')['objects'];
         const collisionGroup = this.physics.add.staticGroup();
 
@@ -305,7 +301,6 @@ class GameScene extends Phaser.Scene {
         this.changeDirection();
 
         // Collision
-        this.physics.add.collider(this.npcs, ObjectLayer);
         this.physics.add.collider(this.npcs, this.npcs);
 
         // Alle paar Sekunden Richtung ändern
