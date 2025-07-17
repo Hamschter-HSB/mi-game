@@ -10,18 +10,21 @@
     "file.lastUsedOpenFilter": "Alle Dateien (*)",
     "fileStates": {
         "": {
-            "scaleInDock": 1,
-            "scaleInEditor": 1
+            "scaleInDock": 3,
+            "scaleInEditor": 3
         },
         "#Tileset0001": {
             "scaleInDock": 4
         },
+        ":/automap-tiles.tsx": {
+            "scaleInDock": 1
+        },
         "C:/Users/marku/Desktop/city.tmx": {
-            "scale": 2,
-            "selectedLayer": 3,
+            "scale": 1.5,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 174.5,
-                "y": 909.5
+                "x": 606,
+                "y": 411.3333333333333
             }
         },
         "C:/Users/marku/Desktop/city.tmx#Tileset0001": {
@@ -29,8 +32,8 @@
             "scaleInEditor": 1
         },
         "C:/Users/marku/Desktop/city.tmx#tileset_map1": {
-            "scaleInDock": 4,
-            "scaleInEditor": 1
+            "scaleInDock": 1,
+            "scaleInEditor": 4
         },
         "city_map.json": {
             "scale": 0.0625,
@@ -55,12 +58,13 @@
             "scaleInDock": 1
         }
     },
+    "frame.defaultDuration": 500,
     "last.exportedFilePath": "C:/Users/marku/Desktop/MI game/mi-game/assets/map",
     "last.imagePath": "C:/Users/marku/Desktop",
     "lastUsedTilesetExportFilter": "JSON-Kachelsatz-Dateien (*.tsj *.json)",
     "map.height": 64,
     "map.lastUsedExportFilter": "JSON-Kartendateien (*.tmj *.json)",
-    "map.lastUsedFormat": "json",
+    "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
     "map.width": 64,

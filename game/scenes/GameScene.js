@@ -18,7 +18,10 @@ class GameScene extends Phaser.Scene {
             frameWidth: 16,
             frameHeight: 16
         });
-        this.load.image('customer', 'assets/img/customer.png');
+        this.load.spritesheet('customer', 'assets/img/customer.png', {
+            frameWidth: 16,
+            frameHeight: 16
+        });
         this.load.image('car', 'assets/img/car.png');
 
         this.load.image('menuOverlay', 'assets/img/logo.png');
@@ -31,7 +34,6 @@ class GameScene extends Phaser.Scene {
         for (let i = 1; i <= 10; i++) {
             this.load.image(`level${i}`, `assets/img/ui/level/${i}.png`);
         }
-
 
         // Optionaler Spieler-Sprite
     }
@@ -169,12 +171,6 @@ class GameScene extends Phaser.Scene {
             loop: true // Sound soll bei gedrückter Taste durchgehend spielen
         });
 
-        // adding collision
-        this.physics.add.collider(this.player, collisionGroup);
-        this.physics.add.collider(this.car, collisionGroup);
-        this.physics.add.collider(this.player, this.npcs, (player, npc) => {
-            console.log('Spieler kollidiert mit NPC!');
-        });
 
         // Kamera folgt Spieler
         this.cameras.main.startFollow(this.player);
@@ -297,6 +293,14 @@ class GameScene extends Phaser.Scene {
             this.npcs.add(npc);
         }
 
+        // adding collision
+        this.physics.add.collider(this.player, collisionGroup);
+        this.physics.add.collider(this.car, collisionGroup);
+        this.physics.add.collider(this.npcs, collisionGroup);
+        this.physics.add.collider(this.player, this.npcs, (player, npc) => {
+            console.log('Spieler kollidiert mit NPC!');
+        });
+
         // Bewegung starten
         this.changeDirection();
 
@@ -388,6 +392,16 @@ class GameScene extends Phaser.Scene {
                 key: 'npc-walk-up',
                 frames: this.anims.generateFrameNumbers('npc', { frames: [9, 10, 9, 11] }),
                 frameRate: 8,
+                repeat: -1
+            });
+        }
+
+        // Animation: Customer idle animation
+        if (!this.anims.exists('customer-idle')) {
+            this.anims.create({
+                key: 'customer-idle',
+                frames: this.anims.generateFrameNumbers('customer', { frames: [0, 1, 2, 1] }),
+                frameRate: 6,
                 repeat: -1
             });
         }
@@ -509,7 +523,7 @@ class GameScene extends Phaser.Scene {
         }
 
         this.pizzyAssistant.setTexture(key);
-    }
+    }        
 
     checkObjective() {
         const px = this.player.x;
@@ -610,7 +624,7 @@ class GameScene extends Phaser.Scene {
             this.customerSprite = null;
         }
 
-        this.customerSprite = this.add.sprite(x, y, 'customer').setDepth(150);
+        this.customerSprite = this.physics.add.sprite(x, y, 'customer').setDepth(150);
         this.customerSprite.setScale(8);
     }
 
@@ -645,7 +659,7 @@ class GameScene extends Phaser.Scene {
         if (!this.player || !this.player.body) return;
         const playerSpeed = 200;
         const body = this.player.body;
-        const player = this.player
+        const player = this.player;
 
 
         this.player.setDepth(this.player.y + 64);
@@ -763,6 +777,11 @@ class GameScene extends Phaser.Scene {
                     this.sound.play('hornSound', { volume: GameSettings.volume });
             }
 
+        }
+
+        // Customer animation
+        if (this.customerSprite != null){
+            this.customerSprite.anims.play('customer-idle', true);
         }
 
         this.checkObjective();
