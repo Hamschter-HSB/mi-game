@@ -22,7 +22,10 @@ class GameScene extends Phaser.Scene {
             frameWidth: 16,
             frameHeight: 16
         });
-        this.load.image('car', 'assets/img/car.png');
+        this.load.spritesheet('car', 'assets/img/car.png', {
+            frameWidth: 32,
+            frameHeight: 32
+        })
 
         this.load.image('menuOverlay', 'assets/img/logo.png');
         this.load.image('menuBtn', 'assets/img/ui/Menu.png');
@@ -103,6 +106,10 @@ class GameScene extends Phaser.Scene {
         droppedLayer.setScale(scaleFactor);
         droppedLayer.setDepth(2);
 
+        const droppedLayer2 = map.createLayer('Dropped2', tileset, 0, 0); // Layername wie in Tiled
+        droppedLayer2.setScale(scaleFactor);
+        droppedLayer2.setDepth(3);
+
         const groundLayer = map.createLayer('Ground', tileset, 0, 0); // Layername wie in Tiled
         groundLayer.setScale(scaleFactor);
 
@@ -164,7 +171,10 @@ class GameScene extends Phaser.Scene {
 
         this.car = this.physics.add.sprite(840, 830, 'car')
             .setCollideWorldBounds(true)
-            .setDepth(16);
+            .setDepth(16)
+            .setScale(scaleFactor);
+        this.car.body.setSize(26, 24)
+           // .setOffset(5, 5);
 
         this.driveSound = this.sound.add('driveSound', {
             volume: GameSettings.volume,
@@ -523,7 +533,7 @@ class GameScene extends Phaser.Scene {
         }
 
         this.pizzyAssistant.setTexture(key);
-    }        
+    }
 
     checkObjective() {
         const px = this.player.x;
@@ -768,10 +778,6 @@ class GameScene extends Phaser.Scene {
 
             this.car.setVelocity(this.carVelocity.x, this.carVelocity.y);
 
-            if (this.car.body.velocity.length() > 10) {
-                this.car.rotation = Phaser.Math.Angle.Between(0, 0, this.carVelocity.x, this.carVelocity.y);
-            }
-
             if (Phaser.Input.Keyboard.JustDown(this.hKey)) {
                 if (this.inCar)
                     this.sound.play('hornSound', { volume: GameSettings.volume });
@@ -779,8 +785,25 @@ class GameScene extends Phaser.Scene {
 
         }
 
+        const angleRad = this.car.body.velocity.angle();
+        let angleDeg = Phaser.Math.RadToDeg(angleRad);
+        if (angleDeg < 0) angleDeg += 360; // z. B. -90 → 270
+        
+        let frameIndex;
+        
+        if (angleDeg >= 337.5 || angleDeg < 22.5) frameIndex = 2;       // rechts
+        else if (angleDeg < 67.5)               frameIndex = 3;         // rechts unten
+        else if (angleDeg < 112.5)              frameIndex = 4;         // unten
+        else if (angleDeg < 157.5)              frameIndex = 5;         // unten links
+        else if (angleDeg < 202.5)              frameIndex = 6;         // links
+        else if (angleDeg < 247.5)              frameIndex = 7;         // links oben
+        else if (angleDeg < 292.5)              frameIndex = 0;         // oben
+        else                                     frameIndex = 1;        // oben rechts
+        
+        this.car.setFrame(frameIndex);
+
         // Customer animation
-        if (this.customerSprite != null){
+        if (this.customerSprite != null) {
             this.customerSprite.anims.play('customer-idle', true);
         }
 
