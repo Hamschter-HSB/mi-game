@@ -114,20 +114,19 @@ class GameScene extends Phaser.Scene {
         groundLayer.setScale(scaleFactor);
 
         const collisionObjects = map.getObjectLayer('Collisions')['objects'];
-        const collisionGroup = this.physics.add.staticGroup();
-
+        this.collisionGroup = this.physics.add.staticGroup();
 
         collisionObjects.forEach((objData) => {
             const { x, y, width, height } = objData;
-
+        
             const scaledX = (x + width / 2) * scaleFactor;
             const scaledY = (y + height / 2) * scaleFactor;
             const scaledWidth = width * scaleFactor;
             const scaledHeight = height * scaleFactor;
-
+        
             const rect = this.add.rectangle(scaledX, scaledY, scaledWidth, scaledHeight);
             this.physics.add.existing(rect, true);
-            collisionGroup.add(rect);
+            this.collisionGroup.add(rect);
         });
 
         const objectLayer = map.getObjectLayer('DynamicLayering');
@@ -157,6 +156,7 @@ class GameScene extends Phaser.Scene {
             .setCollideWorldBounds(true)
         this.player.body.setSize(10, 3)          // Größe der Hitbox
         this.player.body.setOffset(3, 13);
+        this.player.setPushable(false);
         this.walkSound = this.sound.add('walkSound', {
             volume: GameSettings.volume,
             loop: true // Sound soll bei gedrückter Taste durchgehend spielen
@@ -174,6 +174,8 @@ class GameScene extends Phaser.Scene {
             .setDepth(16)
             .setScale(scaleFactor);
         this.car.body.setSize(26, 24)
+        this.car.setPushable(false);
+
            // .setOffset(5, 5);
 
         this.driveSound = this.sound.add('driveSound', {
@@ -303,19 +305,21 @@ class GameScene extends Phaser.Scene {
             this.npcs.add(npc);
         }
 
-        // adding collision
-        this.physics.add.collider(this.player, collisionGroup);
-        this.physics.add.collider(this.car, collisionGroup);
-        this.physics.add.collider(this.npcs, collisionGroup);
-        this.physics.add.collider(this.player, this.npcs, (player, npc) => {
-            console.log('Spieler kollidiert mit NPC!');
-        });
-
         // Bewegung starten
         this.changeDirection();
 
         // Collision
         this.physics.add.collider(this.npcs, this.npcs);
+
+        this.physics.add.collider(this.car, this.npcs, (car, npc) => {
+            console.log('Auto kollidiert mit NPC!');
+        });
+        this.physics.add.collider(this.player, this.collisionGroup);
+        this.physics.add.collider(this.car, this.collisionGroup);
+        this.physics.add.collider(this.npcs, this.collisionGroup);
+        this.physics.add.collider(this.player, this.npcs, (player, npc) => {
+            console.log('Spieler kollidiert mit NPC!');
+        });
 
         // Alle paar Sekunden Richtung ändern
         this.time.addEvent({
@@ -485,7 +489,7 @@ class GameScene extends Phaser.Scene {
         this.npcs.children.iterate(npc => {
             this.npcSpeed = 25;
             npc.setVelocity(npc.dx * this.npcSpeed, npc.dy * this.npcSpeed);
-            npc.setImmovable(true); //kollision mit spieler: NPCs können nicht verschoben werden
+            npc.setImmovable(false); //kollision mit spieler: NPCs können nicht verschoben werden
         });
     }
 
