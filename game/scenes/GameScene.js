@@ -371,7 +371,14 @@ class GameScene extends Phaser.Scene {
         }
 
         // Spieler steht still
-
+                if (!this.anims.exists('idle')) {
+            this.anims.create({
+                key: 'idle',
+                frames: this.anims.generateFrameNumbers('player', { frames: [0, 12, 13, 12] }),
+                frameRate: 4,
+                repeat: -1
+            });
+        }
 
         // Animation: NPC läuft nach unten
         if (!this.anims.exists('npc-walk-down')) {
@@ -414,6 +421,14 @@ class GameScene extends Phaser.Scene {
         }
 
         // NPC steht still 
+                if (!this.anims.exists('npc-idle')) {
+            this.anims.create({
+                key: 'npc-idle',
+                frames: this.anims.generateFrameNumbers('npc', { frames: [0, 12, 13, 12] }),
+                frameRate: 4,
+                repeat: -1
+            });
+        }
 
         // Animation: Customer idle animation
         if (!this.anims.exists('customer-idle')) {
@@ -592,21 +607,23 @@ class GameScene extends Phaser.Scene {
         ];
 
         this.npcs.children.iterate(npc => {
-            npc.anims.stop();
             const dir = Phaser.Math.RND.pick(directions);
             npc.dx = dir.dx;
             npc.dy = dir.dy;
             if (npc.dx > 0) {
                 npc.anims.play('npc-walk-right', true);
-            }
+            }else 
             if (npc.dx < 0) {
                 npc.anims.play('npc-walk-left', true);
-            }
+            }else
             if (npc.dy > 0) {
                 npc.anims.play('npc-walk-down', true);
-            }
+            }else
             if (npc.dy < 0) {
                 npc.anims.play('npc-walk-up', true);
+            }
+            else{
+                npc.anims.play('npc-idle', true);
             }
         });
     }
@@ -837,7 +854,7 @@ class GameScene extends Phaser.Scene {
             }
 
             if (!isWalkingKeyDown) {
-                player.anims.stop();
+                player.anims.play('idle', true);
             }
         } else {
             const carSpeed = 600; // schneller als Spieler
