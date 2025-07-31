@@ -370,6 +370,9 @@ class GameScene extends Phaser.Scene {
             });
         }
 
+        // Spieler steht still
+
+
         // Animation: NPC läuft nach unten
         if (!this.anims.exists('npc-walk-down')) {
             this.anims.create({
@@ -410,6 +413,8 @@ class GameScene extends Phaser.Scene {
             });
         }
 
+        // NPC steht still 
+
         // Animation: Customer idle animation
         if (!this.anims.exists('customer-idle')) {
             this.anims.create({
@@ -421,6 +426,90 @@ class GameScene extends Phaser.Scene {
         }
 
         this.events.once('shutdown', this.shutdown, this);
+
+
+        // Animation: Car fährt nach oben
+                if (!this.anims.exists('car-drive-up')) {
+            this.anims.create({
+                key: 'car-drive-up',
+                frames: this.anims.generateFrameNumbers('car', { frames: [0, 8] }),
+                frameRate: 2,
+                repeat: -1
+            });
+        }
+
+        // Animation: Car fährt nach oben rechts
+                        if (!this.anims.exists('car-drive-up-right')) {
+            this.anims.create({
+                key: 'car-drive-up-right',
+                frames: this.anims.generateFrameNumbers('car', { frames: [1, 12] }),
+                frameRate: 2,
+                repeat: -1
+            });
+        }
+
+        // Animation: Car fährt nach rechts
+
+                        if (!this.anims.exists('car-drive-right')) {
+            this.anims.create({
+                key: 'car-drive-right',
+                frames: this.anims.generateFrameNumbers('car', { frames: [2, 10] }),
+                frameRate: 2,
+                repeat: -1
+            });
+        }
+
+        // Animation: Car fährt nach rechts unten 
+                if (!this.anims.exists('car-drive-down-right')) {
+            this.anims.create({
+                key: 'car-drive-down-right',
+                frames: this.anims.generateFrameNumbers('car', { frames: [3, 13] }),
+                frameRate: 2,
+                repeat: -1
+            });
+        }
+
+        // Animation: Car fährt nach unten
+                if (!this.anims.exists('car-drive-down')) {
+            this.anims.create({
+                key: 'car-drive-down',
+                frames: this.anims.generateFrameNumbers('car', { frames: [4, 9] }),
+                frameRate: 2,
+                repeat: -1
+            });
+        }
+
+        // Animation: Car fährt nach unten links
+                if (!this.anims.exists('car-drive-down-left')) {
+            this.anims.create({
+                key: 'car-drive-down-left',
+                frames: this.anims.generateFrameNumbers('car', { frames: [5, 14] }),
+                frameRate: 2,
+                repeat: -1
+            });
+        }
+
+        // Animation: Car fährt nach links
+                if (!this.anims.exists('car-drive-left')) {
+            this.anims.create({
+                key: 'car-drive-left',
+                frames: this.anims.generateFrameNumbers('car', { frames: [6, 11] }),
+                frameRate: 2,
+                repeat: -1
+            });
+        }
+
+        // Animation: Car fährt nach links oben
+                        if (!this.anims.exists('car-drive-up-left')) {
+            this.anims.create({
+                key: 'car-drive-up-left',
+                frames: this.anims.generateFrameNumbers('car', { frames: [7, 15] }),
+                frameRate: 2,
+                repeat: -1
+            });
+        }
+
+
 
     } // end of create
 
@@ -793,18 +882,33 @@ class GameScene extends Phaser.Scene {
         let angleDeg = Phaser.Math.RadToDeg(angleRad);
         if (angleDeg < 0) angleDeg += 360; // z. B. -90 → 270
         
+
+        // Car Frame Auswahl (aus Spritesheet) 
         let frameIndex;
         
-        if (angleDeg >= 337.5 || angleDeg < 22.5) frameIndex = 2;       // rechts
-        else if (angleDeg < 67.5)               frameIndex = 3;         // rechts unten
-        else if (angleDeg < 112.5)              frameIndex = 4;         // unten
-        else if (angleDeg < 157.5)              frameIndex = 5;         // unten links
-        else if (angleDeg < 202.5)              frameIndex = 6;         // links
-        else if (angleDeg < 247.5)              frameIndex = 7;         // links oben
-        else if (angleDeg < 292.5)              frameIndex = 0;         // oben
-        else                                     frameIndex = 1;        // oben rechts
+        if (angleDeg >= 337.5 || angleDeg < 22.5)   // rechts
+            {this.car.anims.play('car-drive-right', true)}         
+        else if (angleDeg < 67.5)                   // rechts unten
+            {this.car.anims.play('car-drive-down-right', true)}         
+        else if (angleDeg < 112.5)                  // unten  
+            {this.car.anims.play('car-drive-down', true)}         
+        else if (angleDeg < 157.5)                  // unten links          
+            {this.car.anims.play('car-drive-down-left', true)}         
+        else if (angleDeg < 202.5)                  // links
+            {this.car.anims.play('car-drive-left', true)}         
+        else if (angleDeg < 247.5)                  // links oben       
+            {this.car.anims.play('car-drive-up-left', true)}         
+        else if (angleDeg < 292.5)                  // oben    
+            {this.car.anims.play('car-drive-up', true)}         
+        else                                        // oben rechts  
+            {this.car.anims.play('car-drive-up-right', true)}         
+            
+            const toleranceValue = 1 
         
-        this.car.setFrame(frameIndex);
+        if ((this.car.body.velocity.x<=toleranceValue && this.car.body.velocity.x>=-toleranceValue )&&( this.car.body.velocity.y<=toleranceValue && this.car.body.velocity.y>=-toleranceValue)){ 
+                this.car.anims.stop();
+        }
+        //this.car.setFrame(frameIndex);
 
         // Customer animation
         if (this.customerSprite != null) {
