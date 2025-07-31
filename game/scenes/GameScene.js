@@ -109,6 +109,16 @@ class GameScene extends Phaser.Scene {
         const droppedLayer2 = map.createLayer('Dropped2', tileset, 0, 0); // Layername wie in Tiled
         droppedLayer2.setScale(scaleFactor);
         droppedLayer2.setDepth(3);
+        
+        const droppedLayer3 = map.createLayer('Dropped3', tileset, 0, 0); // Layername wie in Tiled
+        droppedLayer3.setScale(scaleFactor);
+        droppedLayer3.setDepth(4);
+        
+        const droppedLayer4 = map.createLayer('Dropped4', tileset, 0, 0); // Layername wie in Tiled
+        droppedLayer4.setScale(scaleFactor);
+        droppedLayer4.setDepth(5);
+
+
 
         const groundLayer = map.createLayer('Ground', tileset, 0, 0); // Layername wie in Tiled
         groundLayer.setScale(scaleFactor);
