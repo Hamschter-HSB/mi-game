@@ -912,21 +912,21 @@ class GameScene extends Phaser.Scene {
 
         // Car Animation basierend auf Bewegungsrichtung
         if (angleDeg >= 337.5 || angleDeg < 22.5)   // rechts
-            {this.car.anims.play('car-drive-right', true)}         
+        { this.car.anims.play('car-drive-right', true) }
         else if (angleDeg < 67.5)                   // rechts unten
-            {this.car.anims.play('car-drive-down-right', true)}         
+        { this.car.anims.play('car-drive-down-right', true) }
         else if (angleDeg < 112.5)                  // unten  
-            {this.car.anims.play('car-drive-down', true)}         
+        { this.car.anims.play('car-drive-down', true) }
         else if (angleDeg < 157.5)                  // unten links          
-            {this.car.anims.play('car-drive-down-left', true)}         
+        { this.car.anims.play('car-drive-down-left', true) }
         else if (angleDeg < 202.5)                  // links
-            {this.car.anims.play('car-drive-left', true)}         
+        { this.car.anims.play('car-drive-left', true) }
         else if (angleDeg < 247.5)                  // links oben       
-            {this.car.anims.play('car-drive-up-left', true)}         
+        { this.car.anims.play('car-drive-up-left', true) }
         else if (angleDeg < 292.5)                  // oben    
-            {this.car.anims.play('car-drive-up', true)}         
+        { this.car.anims.play('car-drive-up', true) }
         else                                        // oben rechts  
-            {this.car.anims.play('car-drive-up-right', true)}         
+        { this.car.anims.play('car-drive-up-right', true) }
 
         const toleranceValue = 1
 
@@ -979,6 +979,13 @@ class GameScene extends Phaser.Scene {
                     this.sendScoreToServer(name, time);
                 }
             }
+        }
+        if (GameState.currentLevel > 6) {
+            console.log("GAME WON");
+            this.scene.get('MusicManagerScene').stopMusic();
+            this.sound.play('gameoverSound', { volume: GameSettings.volume });
+            GameState.deliveryTimeLeft = 30000;
+            this.scene.start('VictoryScene');
         }
 
         this.updateNPC();
