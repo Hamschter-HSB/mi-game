@@ -980,7 +980,7 @@ class GameScene extends Phaser.Scene {
                 }
             }
         }
-        if (GameState.currentLevel > 6) {
+        if (GameState.currentLevel > 7) {
             console.log("GAME WON");
             this.scene.get('MusicManagerScene').stopMusic();
             this.sound.play('gameoverSound', { volume: GameSettings.volume });
