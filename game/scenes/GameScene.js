@@ -109,11 +109,11 @@ class GameScene extends Phaser.Scene {
         const droppedLayer2 = map.createLayer('Dropped2', tileset, 0, 0); // Layername wie in Tiled
         droppedLayer2.setScale(scaleFactor);
         droppedLayer2.setDepth(3);
-        
+
         const droppedLayer3 = map.createLayer('Dropped3', tileset, 0, 0); // Layername wie in Tiled
         droppedLayer3.setScale(scaleFactor);
         droppedLayer3.setDepth(4);
-        
+
         const droppedLayer4 = map.createLayer('Dropped4', tileset, 0, 0); // Layername wie in Tiled
         droppedLayer4.setScale(scaleFactor);
         droppedLayer4.setDepth(5);
@@ -128,12 +128,12 @@ class GameScene extends Phaser.Scene {
 
         collisionObjects.forEach((objData) => {
             const { x, y, width, height } = objData;
-        
+
             const scaledX = (x + width / 2) * scaleFactor;
             const scaledY = (y + height / 2) * scaleFactor;
             const scaledWidth = width * scaleFactor;
             const scaledHeight = height * scaleFactor;
-        
+
             const rect = this.add.rectangle(scaledX, scaledY, scaledWidth, scaledHeight);
             this.physics.add.existing(rect, true);
             this.collisionGroup.add(rect);
@@ -183,10 +183,10 @@ class GameScene extends Phaser.Scene {
             .setCollideWorldBounds(true)
             .setDepth(16)
             .setScale(scaleFactor);
-        this.car.body.setSize(26, 24)
+        this.car.body.setSize(18, 18)
         this.car.setPushable(false);
 
-           // .setOffset(5, 5);
+        // .setOffset(5, 5);
 
         this.driveSound = this.sound.add('driveSound', {
             volume: GameSettings.volume,
@@ -381,7 +381,7 @@ class GameScene extends Phaser.Scene {
         }
 
         // Spieler steht still
-                if (!this.anims.exists('idle')) {
+        if (!this.anims.exists('idle')) {
             this.anims.create({
                 key: 'idle',
                 frames: this.anims.generateFrameNumbers('player', { frames: [0, 12, 13, 12] }),
@@ -431,7 +431,7 @@ class GameScene extends Phaser.Scene {
         }
 
         // NPC steht still 
-                if (!this.anims.exists('npc-idle')) {
+        if (!this.anims.exists('npc-idle')) {
             this.anims.create({
                 key: 'npc-idle',
                 frames: this.anims.generateFrameNumbers('npc', { frames: [0, 12, 13, 12] }),
@@ -454,7 +454,7 @@ class GameScene extends Phaser.Scene {
 
 
         // Animation: Car fährt nach oben
-                if (!this.anims.exists('car-drive-up')) {
+        if (!this.anims.exists('car-drive-up')) {
             this.anims.create({
                 key: 'car-drive-up',
                 frames: this.anims.generateFrameNumbers('car', { frames: [0, 8] }),
@@ -464,7 +464,7 @@ class GameScene extends Phaser.Scene {
         }
 
         // Animation: Car fährt nach oben rechts
-                        if (!this.anims.exists('car-drive-up-right')) {
+        if (!this.anims.exists('car-drive-up-right')) {
             this.anims.create({
                 key: 'car-drive-up-right',
                 frames: this.anims.generateFrameNumbers('car', { frames: [1, 12] }),
@@ -475,7 +475,7 @@ class GameScene extends Phaser.Scene {
 
         // Animation: Car fährt nach rechts
 
-                        if (!this.anims.exists('car-drive-right')) {
+        if (!this.anims.exists('car-drive-right')) {
             this.anims.create({
                 key: 'car-drive-right',
                 frames: this.anims.generateFrameNumbers('car', { frames: [2, 10] }),
@@ -485,7 +485,7 @@ class GameScene extends Phaser.Scene {
         }
 
         // Animation: Car fährt nach rechts unten 
-                if (!this.anims.exists('car-drive-down-right')) {
+        if (!this.anims.exists('car-drive-down-right')) {
             this.anims.create({
                 key: 'car-drive-down-right',
                 frames: this.anims.generateFrameNumbers('car', { frames: [3, 13] }),
@@ -495,7 +495,7 @@ class GameScene extends Phaser.Scene {
         }
 
         // Animation: Car fährt nach unten
-                if (!this.anims.exists('car-drive-down')) {
+        if (!this.anims.exists('car-drive-down')) {
             this.anims.create({
                 key: 'car-drive-down',
                 frames: this.anims.generateFrameNumbers('car', { frames: [4, 9] }),
@@ -505,7 +505,7 @@ class GameScene extends Phaser.Scene {
         }
 
         // Animation: Car fährt nach unten links
-                if (!this.anims.exists('car-drive-down-left')) {
+        if (!this.anims.exists('car-drive-down-left')) {
             this.anims.create({
                 key: 'car-drive-down-left',
                 frames: this.anims.generateFrameNumbers('car', { frames: [5, 14] }),
@@ -515,7 +515,7 @@ class GameScene extends Phaser.Scene {
         }
 
         // Animation: Car fährt nach links
-                if (!this.anims.exists('car-drive-left')) {
+        if (!this.anims.exists('car-drive-left')) {
             this.anims.create({
                 key: 'car-drive-left',
                 frames: this.anims.generateFrameNumbers('car', { frames: [6, 11] }),
@@ -525,7 +525,7 @@ class GameScene extends Phaser.Scene {
         }
 
         // Animation: Car fährt nach links oben
-                        if (!this.anims.exists('car-drive-up-left')) {
+        if (!this.anims.exists('car-drive-up-left')) {
             this.anims.create({
                 key: 'car-drive-up-left',
                 frames: this.anims.generateFrameNumbers('car', { frames: [7, 15] }),
@@ -622,17 +622,17 @@ class GameScene extends Phaser.Scene {
             npc.dy = dir.dy;
             if (npc.dx > 0) {
                 npc.anims.play('npc-walk-right', true);
-            }else 
-            if (npc.dx < 0) {
+            }
+            else if (npc.dx < 0) {
                 npc.anims.play('npc-walk-left', true);
-            }else
-            if (npc.dy > 0) {
+            }
+            else if (npc.dy > 0) {
                 npc.anims.play('npc-walk-down', true);
-            }else
-            if (npc.dy < 0) {
+            }
+            else if (npc.dy < 0) {
                 npc.anims.play('npc-walk-up', true);
             }
-            else{
+            else {
                 npc.anims.play('npc-idle', true);
             }
         });
@@ -908,11 +908,9 @@ class GameScene extends Phaser.Scene {
         const angleRad = this.car.body.velocity.angle();
         let angleDeg = Phaser.Math.RadToDeg(angleRad);
         if (angleDeg < 0) angleDeg += 360; // z. B. -90 → 270
-        
 
-        // Car Frame Auswahl (aus Spritesheet) 
-        let frameIndex;
-        
+
+        // Car Animation basierend auf Bewegungsrichtung
         if (angleDeg >= 337.5 || angleDeg < 22.5)   // rechts
             {this.car.anims.play('car-drive-right', true)}         
         else if (angleDeg < 67.5)                   // rechts unten
@@ -929,11 +927,11 @@ class GameScene extends Phaser.Scene {
             {this.car.anims.play('car-drive-up', true)}         
         else                                        // oben rechts  
             {this.car.anims.play('car-drive-up-right', true)}         
-            
-            const toleranceValue = 1 
-        
-        if ((this.car.body.velocity.x<=toleranceValue && this.car.body.velocity.x>=-toleranceValue )&&( this.car.body.velocity.y<=toleranceValue && this.car.body.velocity.y>=-toleranceValue)){ 
-                this.car.anims.stop();
+
+        const toleranceValue = 1
+
+        if ((this.car.body.velocity.x <= toleranceValue && this.car.body.velocity.x >= -toleranceValue) && (this.car.body.velocity.y <= toleranceValue && this.car.body.velocity.y >= -toleranceValue)) {
+            this.car.anims.stop();
         }
         //this.car.setFrame(frameIndex);
 
