@@ -164,8 +164,8 @@ class GameScene extends Phaser.Scene {
         this.player = this.physics.add.sprite(1230, 1152, 'player')
             .setScale(scaleFactor)
             .setCollideWorldBounds(true)
-        this.player.body.setSize(10, 3)          // Größe der Hitbox
-        this.player.body.setOffset(3, 13);
+        this.player.body.setSize(12, 3)          // Größe der Hitbox
+        this.player.body.setOffset(2, 13);
         this.player.setPushable(false);
         this.walkSound = this.sound.add('walkSound', {
             volume: GameSettings.volume,
@@ -304,8 +304,8 @@ class GameScene extends Phaser.Scene {
             const npc = this.physics.add.sprite(npcSpawnPointX, npcSpawnPointY, 'npc');
             npc.setScale(scaleFactor);
             npc.setDepth(15);
-            npc.body.setSize(10, 3);          // Größe der Hitbox
-            npc.body.setOffset(3, 13);
+            npc.body.setSize(12, 3);          // Größe der Hitbox
+            npc.body.setOffset(2, 13);
             npc.setCollideWorldBounds(true); // bleibt im Weltbereich
 
             // Richtungswerte speichern
@@ -603,7 +603,12 @@ class GameScene extends Phaser.Scene {
         this.npcs.children.iterate(npc => {
             this.npcSpeed = 25;
             npc.setVelocity(npc.dx * this.npcSpeed, npc.dy * this.npcSpeed);
-            npc.setImmovable(false); //kollision mit spieler: NPCs können nicht verschoben werden
+            npc.setImmovable(false); //kollision mit spieler: NPCs können verschoben werden
+
+            //Dynamisches Layering
+            this.npcs.getChildren().forEach(npc => {
+                npc.setDepth(npc.y + 64);
+            });
         });
     }
 
@@ -793,7 +798,7 @@ class GameScene extends Phaser.Scene {
 
 
         this.player.setDepth(this.player.y + 64);
-        this.car.setDepth(this.car.y);
+        this.car.setDepth(this.car.y + 64);
 
         // F drücken → einsteigen oder aussteigen
         if (Phaser.Input.Keyboard.JustDown(this.fKey)) {
@@ -820,8 +825,8 @@ class GameScene extends Phaser.Scene {
                 this.player.body.reset(this.car.x, this.car.y);
                 this.player.setVisible(true);
                 this.cameras.main.startFollow(this.player);
-                this.car.setVelocity(0, 0);
-                this.carVelocity = { x: 0, y: 0 };
+                //this.car.setVelocity(0, 0);
+                //this.carVelocity = { x: 0, y: 0 };
 
                 this.stopCarDriveSoundIfPlayed();
                 this.stopCarNitroSoundIfPlayed();
@@ -866,6 +871,12 @@ class GameScene extends Phaser.Scene {
             if (!isWalkingKeyDown) {
                 player.anims.play('idle', true);
             }
+             // „Nachschieben“ (einfache Trägheit)
+            this.carVelocity.x = this.car.body.velocity.x * 0.95;
+            this.carVelocity.y = this.car.body.velocity.y * 0.95;
+
+            this.car.setVelocity(this.carVelocity.x, this.carVelocity.y);
+
         } else {
             const carSpeed = 600; // schneller als Spieler
             let targetVX = 0;
@@ -910,7 +921,7 @@ class GameScene extends Phaser.Scene {
         if (angleDeg < 0) angleDeg += 360; // z. B. -90 → 270
 
 
-        // Car Animation basierend auf Bewegungsrichtung
+        // Car Animation basierend auf Bewegungsrichtung/Winkel
         if (angleDeg >= 337.5 || angleDeg < 22.5)   // rechts
         { this.car.anims.play('car-drive-right', true) }
         else if (angleDeg < 67.5)                   // rechts unten
@@ -930,11 +941,10 @@ class GameScene extends Phaser.Scene {
 
         const toleranceValue = 1
 
+        //Animation anhalten wenn Auto sich nicht bewegt
         if ((this.car.body.velocity.x <= toleranceValue && this.car.body.velocity.x >= -toleranceValue) && (this.car.body.velocity.y <= toleranceValue && this.car.body.velocity.y >= -toleranceValue)) {
             this.car.anims.stop();
         }
-        //this.car.setFrame(frameIndex);
-
         // Customer animation
         if (this.customerSprite != null) {
             this.customerSprite.anims.play('customer-idle', true);

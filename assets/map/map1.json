@@ -72,7 +72,7 @@
          "name":"Ground",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":64,
          "x":0,
          "y":0
@@ -147,7 +147,7 @@
          "name":"Dropped2",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":64,
          "x":0,
          "y":0
@@ -4418,7 +4418,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }, 
@@ -5276,7 +5276,7 @@
                  "y":827
                 }, 
                 {
-                 "height":13,
+                 "height":16,
                  "id":147,
                  "name":"",
                  "rotation":0,
@@ -5284,7 +5284,7 @@
                  "visible":true,
                  "width":32,
                  "x":0,
-                 "y":883
+                 "y":880
                 }, 
                 {
                  "height":32,
@@ -7502,7 +7502,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }, 
@@ -7576,7 +7576,7 @@
          "name":"Dropped",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":64,
          "x":0,
          "y":0
