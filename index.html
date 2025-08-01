@@ -20,6 +20,7 @@
   <script src="game/scenes/DeliveryCutsceneScene.js"></script>
   <script src="game/scenes/GameoverScene.js"></script>
   <script src="game/scenes/PauseMenuScene.js"></script>
+  <script src="game/scenes/VictoryScene.js"></script>
 
   <!-- Game Init -->
   <script>
@@ -42,14 +43,15 @@
         GameScene,
         DeliveryCutsceneScene,
         GameoverScene,
-        PauseMenuScene
+        PauseMenuScene,
+        VictoryScene
       ],
       backgroundColor: '#000',
       physics: {
         default: 'arcade',
         arcade: {
           gravity: { y: 0 },
-          debug: true
+          debug: false
         }
       }
     };
