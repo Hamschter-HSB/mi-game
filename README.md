@@ -11,9 +11,10 @@ With the help of Pizzy, our little pizza-mascot you will discover the open world
 <img width="1920" height="1080" alt="Background" src="https://github.com/user-attachments/assets/c68f6a5a-ee61-463a-b27c-e571cee96e12" />
 
 
-No Wishlist on Steam or anything!
+No Wishlist on Steam!
 Play it in your browser hosted by us or just clone this repository to try it yourself.
 Feel free to make Pull Requests for enhancing PizzaDelivery.
+You can play in on Itch.io too. --> https://hamschter-hsb.itch.io/pizzadelivery
 This is Browser only!
 
 This is a project of students for university. Here won't be big support for anyone but we would love to get some feedback.
