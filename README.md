@@ -28,7 +28,7 @@ HSB
 
 ## Supported Versions
 
-Currently we will support versions above 1.0.0.
+Currently we will support versions above 2.0.0.
 All versions below wont be supported and is WIP only.
 Feel free to constribute.
 
